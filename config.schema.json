@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "homebridge-plugin-garage",
   "pluginType": "platform",
   "singular": true,
   "schema": {
