@@ -1,7 +1,7 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
-
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { ExamplePlatformAccessory } from './platformAccessory';
+import fetch from 'node-fetch';
 
 /**
  * HomebridgePlatform
@@ -54,7 +54,9 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
     // EXAMPLE ONLY
     // A real plugin you would discover accessories from the local network, cloud services
     // or a user-defined array in the platform config.
+    
     const exampleDevices = [
+      
       {
         exampleUniqueId: 'ABCD',
         exampleDisplayName: 'Bedroom',
@@ -64,6 +66,32 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         exampleDisplayName: 'Kitchen',
       },
     ];
+
+
+    interface Device {
+      id: string
+      pin_num: string
+      type: string
+      state: string
+}
+
+    function getUsers(): Promise<Device[]> {
+
+      // For now, consider the data is stored on a static `users.json` file
+      return fetch('http://192.168.1.201:5000/pins/')
+      // the JSON body is taken from the response
+        .then(res => res.json())
+        .then(res => {
+          // The response has an `any` type, so we need to cast
+          // it to the `User` type, and return it from the promise
+          return res as Device[];
+        });
+    }
+
+  
+    // eslint-disable-next-line no-console
+    console.log(getUsers());
+
 
     // loop over the discovered devices and register each one if it has not already been registered
     for (const device of exampleDevices) {

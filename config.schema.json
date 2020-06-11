@@ -5,11 +5,55 @@
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
-        "title": "Name",
+      "uri": {
+        "title": "URI",
         "type": "string",
         "required": true,
-        "default": "Example Dynamic Platform"
+        "default": "http://localhost:5000/pins",
+        "format": "uri",
+        "description": "The URI of remote API"
+      },
+      "API_Door": {
+        "title": "Door GPIO",
+        "type": "integer",
+        "required": true,
+        "default": "1",
+        "description": "The PIN number for Door"
+      },
+      "API_GarageLight": {
+        "title": "Garage Light GPIO",
+        "type": "integer",
+        "required": true,
+        "default": "2",
+        "description": "The PIN number for Garage Light"
+      },
+      "API_SecurityLight1": {
+        "title": "Security Light 1 GPIO",
+        "type": "integer",
+        "required": true,
+        "default": "3",
+        "description": "The PIN number for Security Light 1"
+      },
+      "API_SecurityLight2": {
+        "title": "Security Light 2 GPIO",
+        "type": "integer",
+        "required": true,
+        "default": "4",
+        "description": "The PIN number for Security Light 2"
+      },
+      "API_SecurityLight3": {
+        "title": "Security Light 3 GPIO",
+        "type": "integer",
+        "required": true,
+        "default": "5",
+        "description": "The PIN number for Security Light 3"
+      },
+      "API_SecurityLight4": {
+        "title": "Security Light 4 GPIO",
+        "type": "integer",
+        "required": true,
+        "default": "3",
+        "description": "The PIN number for Security Light 4"
       }
     }
   }
