@@ -49,33 +49,25 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
    * Accessories must only be registered once, previously created accessories
    * must not be registered again to prevent "duplicate UUID" errors.
    */
-  discoverDevices() {
+  async discoverDevices() {
 
     // EXAMPLE ONLY
     // A real plugin you would discover accessories from the local network, cloud services
     // or a user-defined array in the platform config.
     
-    const exampleDevices = [
-      
-      {
-        exampleUniqueId: 'ABCD',
-        exampleDisplayName: 'Bedroom',
-      },
-      {
-        exampleUniqueId: 'EFGH',
-        exampleDisplayName: 'Kitchen',
-      },
-    ];
+    
 
 
-    interface Device {
+    interface Platform_Device {
       id: string
+      name: string
+      uuid: string
       pin_num: string
       type: string
       state: string
 }
 
-    function getUsers(): Promise<Device[]> {
+    function getUsers(): Promise<Platform_Device[]> {
 
       // For now, consider the data is stored on a static `users.json` file
       return fetch('http://192.168.1.201:5000/pins/')
@@ -84,22 +76,21 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         .then(res => {
           // The response has an `any` type, so we need to cast
           // it to the `User` type, and return it from the promise
-          return res as Device[];
+          return res as Platform_Device[];
         });
     }
 
   
-    // eslint-disable-next-line no-console
-    console.log(getUsers());
+    const exampleDevices = getUsers();
 
 
     // loop over the discovered devices and register each one if it has not already been registered
-    for (const device of exampleDevices) {
+    for (const device of await exampleDevices) {
 
       // generate a unique id for the accessory this should be generated from
       // something globally unique, but constant, for example, the device serial
       // number or MAC address
-      const uuid = this.api.hap.uuid.generate(device.exampleUniqueId);
+      const uuid = this.api.hap.uuid.generate(device.uuid);
 
       // see if an accessory with the same uuid has already been registered and restored from
       // the cached devices we stored in the `configureAccessory` method above
@@ -119,10 +110,10 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
 
       } else {
         // the accessory does not yet exist, so we need to create it
-        this.log.info('Adding new accessory:', device.exampleDisplayName);
+        this.log.info('Adding new accessory:', device.name);
 
         // create a new accessory
-        const accessory = new this.api.platformAccessory(device.exampleDisplayName, uuid);
+        const accessory = new this.api.platformAccessory(device.name, uuid);
 
         // store a copy of the device object in the `accessory.context`
         // the `context` property can be used to store any data about the accessory you may need
