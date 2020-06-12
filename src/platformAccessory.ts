@@ -93,7 +93,7 @@ export class ExamplePlatformAccessory {
     this.platform.log.debug(this.accessory.context.device.id, ' Set Characteristic On ->', value);
 
 
-    const url = 'http://192.168.1.201:5000/pins/';
+    const url = 'http://192.168.1.201:5000/pins/' + this.accessory.context.device.id;
 
     // post body data 
     const user = {
@@ -103,7 +103,7 @@ export class ExamplePlatformAccessory {
 
     // request options
     const options = {
-      method: 'POST',
+      method: 'PATCH',
       body: JSON.stringify(user),
       headers: {'Content-Type': 'application/json'},
     };
