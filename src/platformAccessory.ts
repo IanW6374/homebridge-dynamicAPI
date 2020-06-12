@@ -119,7 +119,7 @@ export class ExamplePlatformAccessory {
     // implement your own code to check if the device is on
 
 
-    const url = 'http://192.168.1.201:5000/pins/' + this.accessory.context.device.id;
+    const url = 'http://192.168.1.201:5000/pins/2';
 
     interface Platform_Device {
           id: number
@@ -145,12 +145,11 @@ export class ExamplePlatformAccessory {
 
     for (const isOn of await device) {
       this.platform.log.debug('Get Characteristic On ->', isOn.on);
-    }
-    // you must call the callback function
-    // the first argument should be null if there were no errors
-    // the second argument should be the value to return
-    callback(null, null);
-    
+      // you must call the callback function
+      // the first argument should be null if there were no errors
+      // the second argument should be the value to return
+      callback(null, isOn.on);
+    } 
   }
 
   /**
