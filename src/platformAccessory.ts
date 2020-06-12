@@ -143,16 +143,14 @@ export class ExamplePlatformAccessory {
     }
     const device = getDevice();
 
-    
-    
     for (const isOn of await device) {
       this.platform.log.debug('Get Characteristic On ->', isOn.on);
-
-      // you must call the callback function
-      // the first argument should be null if there were no errors
-      // the second argument should be the value to return
-      callback(null, isOn.on);
     }
+    // you must call the callback function
+    // the first argument should be null if there were no errors
+    // the second argument should be the value to return
+    callback(null, null);
+    
   }
 
   /**
