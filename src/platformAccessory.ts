@@ -57,28 +57,10 @@ export class ExamplePlatformAccessory {
       this.service.getCharacteristic(this.platform.Characteristic.Brightness)
         .on('set', this.setBrightness.bind(this));       // SET - bind to the 'setBrightness` method below
 
-      // EXAMPLE ONLY
-      // Example showing how to update the state of a Characteristic asynchronously instead
-      // of using the `on('get')` handlers.
-      //
-      // Here we change update the brightness to a random value every 5 seconds using 
-      // the `updateCharacteristic` method.
-      setInterval(() => {
-      // assign the current brightness a random value between 0 and 100
-        const currentBrightness = Math.floor(Math.random() * 100);
-
-        // push the new value to HomeKit
-        this.service.updateCharacteristic(this.platform.Characteristic.Brightness, currentBrightness);
-
-        this.platform.log.debug('Pushed updated current Brightness state to HomeKit:', currentBrightness);
-      }, 10000);
     } else {
       // eslint-disable-next-line max-len
       this.service = this.accessory.getService(this.platform.Service.GarageDoorOpener) || this.accessory.addService(this.platform.Service.GarageDoorOpener);
     }
-    
-
-    
   }
 
   /**
@@ -90,7 +72,7 @@ export class ExamplePlatformAccessory {
     // implement your own code to turn your device on/off
     this.exampleStates.On = value as boolean;
 
-    this.platform.log.debug(this.accessory.context.device.id, ' Set Characteristic On ->', value);
+    this.platform.log.debug(this.accessory.context.device.name, ' Set Characteristic On ->', value);
 
 
     const url = 'http://192.168.1.201:5000/pins/' + this.accessory.context.device.id;
@@ -98,7 +80,7 @@ export class ExamplePlatformAccessory {
     // post body data 
     const user = {
       id: this.accessory.context.device.id,
-      on: value,
+      on: this.exampleStates.On,
     };
 
     // request options
@@ -113,9 +95,6 @@ export class ExamplePlatformAccessory {
       .then(res => res.json())
       // eslint-disable-next-line no-console
       .then(res => console.log(res));
-
-
-
 
     // you must call the callback function
     callback(null);
@@ -134,17 +113,42 @@ export class ExamplePlatformAccessory {
    * @example
    * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
    */
-  getOn(callback: CharacteristicGetCallback) {
+  async getOn(callback: CharacteristicGetCallback) {
 
     // implement your own code to check if the device is on
-    const isOn = this.exampleStates.On;
 
-    this.platform.log.debug('Get Characteristic On ->', isOn);
 
-    // you must call the callback function
-    // the first argument should be null if there were no errors
-    // the second argument should be the value to return
-    callback(null, isOn);
+    const url = 'http://192.168.1.201:5000/pins/' + this.accessory.context.device.id;
+
+    interface Platform_Device {
+          id: number
+          name: string
+          uuid: string
+          brightness: number
+          type: string
+          on: boolean
+    }
+    
+    async function getDevice(): Promise<Platform_Device[]> {
+    
+      const res = await fetch(url);
+      const res_1 = await res.json();
+      // The response has an `any` type, so we need to cast
+      // it to the `User` type, and return it from the promise
+      return res_1 as Platform_Device[];
+    }
+
+    const device = getDevice();
+
+    
+    for (const isOn of await device) {
+      this.platform.log.debug('Get Characteristic On ->', isOn.on);
+
+      // you must call the callback function
+      // the first argument should be null if there were no errors
+      // the second argument should be the value to return
+      callback(null, isOn.on);
+    }
   }
 
   /**
@@ -157,6 +161,27 @@ export class ExamplePlatformAccessory {
     this.exampleStates.Brightness = value as number;
 
     this.platform.log.debug('Set Characteristic Brightness -> ', value);
+
+    const url = 'http://192.168.1.201:5000/pins/' + this.accessory.context.device.id;
+
+    // post body data 
+    const user = {
+      id: this.accessory.context.device.id,
+      brightness: this.exampleStates.Brightness,
+    };
+
+    // request options
+    const options = {
+      method: 'PATCH',
+      body: JSON.stringify(user),
+      headers: {'Content-Type': 'application/json'},
+    };
+
+    // send POST request
+    fetch(url, options)
+      .then(res => res.json())
+      // eslint-disable-next-line no-console
+      .then(res => console.log(res));
 
     // you must call the callback function
     callback(null);

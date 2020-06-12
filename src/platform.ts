@@ -59,17 +59,16 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
 
 
     interface Platform_Device {
-      id: string
+      id: number
       name: string
       uuid: string
-      pin_num: string
+      brightness: number
       type: string
-      state: string
+      on: boolean
 }
 
-    function getUsers(): Promise<Platform_Device[]> {
+    function getDevices(): Promise<Platform_Device[]> {
 
-      // For now, consider the data is stored on a static `users.json` file
       return fetch('http://192.168.1.201:5000/pins/')
       // the JSON body is taken from the response
         .then(res => res.json())
@@ -81,7 +80,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
     }
 
   
-    const exampleDevices = getUsers();
+    const exampleDevices = getDevices();
 
 
     // loop over the discovered devices and register each one if it has not already been registered
