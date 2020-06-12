@@ -124,9 +124,10 @@ export class ExamplePlatformAccessory {
           id: number
           name: string
           uuid: string
-          brightness: number
+          pin_num: number
           type: string
           on: boolean
+          brightness: number
     }
     
     async function getDevice(): Promise<Platform_Device[]> {
@@ -158,7 +159,6 @@ export class ExamplePlatformAccessory {
   setBrightness(value: CharacteristicValue, callback: CharacteristicSetCallback) {
 
     // implement your own code to set the brightness
-    this.exampleStates.Brightness = value as number;
 
     this.platform.log.debug('Set Characteristic Brightness -> ', value);
 

@@ -62,9 +62,10 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
       id: number
       name: string
       uuid: string
-      brightness: number
+      pin_num: number
       type: string
       on: boolean
+      brightness: number
 }
 
     function getDevices(): Promise<Platform_Device[]> {
