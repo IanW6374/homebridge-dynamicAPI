@@ -1,6 +1,6 @@
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
-
 import { ExampleHomebridgePlatform } from './platform';
+import fetch from 'node-fetch';
 
 /**
  * Platform Accessory
@@ -90,7 +90,32 @@ export class ExamplePlatformAccessory {
     // implement your own code to turn your device on/off
     this.exampleStates.On = value as boolean;
 
-    this.platform.log.debug('Set Characteristic On ->', value);
+    this.platform.log.debug(this.accessory.context.device.id, ' Set Characteristic On ->', value);
+
+
+    const url = 'http://192.168.1.201:5000/pins/';
+
+    // post body data 
+    const user = {
+      id: this.accessory.context.device.id,
+      state: 'On',
+    };
+
+    // request options
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(user),
+      headers: {'Content-Type': 'application/json'},
+    };
+
+    // send POST request
+    fetch(url, options)
+      .then(res => res.json())
+      // eslint-disable-next-line no-console
+      .then(res => console.log(res));
+
+
+
 
     // you must call the callback function
     callback(null);
