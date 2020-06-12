@@ -57,6 +57,7 @@ export class ExamplePlatformAccessory {
       this.service.getCharacteristic(this.platform.Characteristic.Brightness)
         .on('set', this.setBrightness.bind(this));       // SET - bind to the 'setBrightness` method below
 
+
     } else {
       // eslint-disable-next-line max-len
       this.service = this.accessory.getService(this.platform.Service.GarageDoorOpener) || this.accessory.addService(this.platform.Service.GarageDoorOpener);
@@ -131,16 +132,18 @@ export class ExamplePlatformAccessory {
     }
     
     async function getDevice(): Promise<Platform_Device[]> {
-    
-      const res = await fetch(url);
-      const res_1 = await res.json();
-      // The response has an `any` type, so we need to cast
-      // it to the `User` type, and return it from the promise
-      return res_1 as Platform_Device[];
+      return fetch(url)
+      // the JSON body is taken from the response
+        .then(res => res.json())
+        .then(res => {
+        // The response has an `any` type, so we need to cast
+        // it to the `User` type, and return it from the promise
+          return res as Platform_Device[];
+        });
     }
-
     const device = getDevice();
 
+    
     
     for (const isOn of await device) {
       this.platform.log.debug('Get Characteristic On ->', isOn.on);
@@ -156,6 +159,7 @@ export class ExamplePlatformAccessory {
    * Handle "SET" requests from HomeKit
    * These are sent when the user changes the state of an accessory, for example, changing the Brightness
    */
+
   async setBrightness(value: CharacteristicValue, callback: CharacteristicSetCallback) {
 
     // implement your own code to set the brightness
