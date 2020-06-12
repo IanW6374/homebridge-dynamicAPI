@@ -131,7 +131,7 @@ export class ExamplePlatformAccessory {
           brightness: number
     }
     
-    async function getDevice(): Promise<Platform_Device[]> {
+    function getDevice(): Promise<Platform_Device[]> {
       return fetch(url)
       // the JSON body is taken from the response
         .then(res => res.json())
