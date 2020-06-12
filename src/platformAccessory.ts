@@ -98,7 +98,7 @@ export class ExamplePlatformAccessory {
     // post body data 
     const user = {
       id: this.accessory.context.device.id,
-      state: 'on',
+      state: value,
     };
 
     // request options
