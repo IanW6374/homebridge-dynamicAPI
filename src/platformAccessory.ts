@@ -142,18 +142,14 @@ export class ExamplePlatformAccessory {
           return res as Platform_Device[];
         });
     }
-    const isOn = getDevice();
+    
+    const exampleDevices = getDevice();
 
-    this.platform.log.debug('Get Characteristic On ->', (await isOn).concat);
 
-
-    //for (const isOn of await device) {
-    this.platform.log.debug('Get Characteristic On ->', isOn);
-    // you must call the callback function
-    // the first argument should be null if there were no errors
-    // the second argument should be the value to return
-    callback(null, null);
-    //} 
+    // loop over the discovered devices and register each one if it has not already been registered
+    for (const device of await exampleDevices) {
+      callback(null, device.on);
+    } 
   }
 
   /**
