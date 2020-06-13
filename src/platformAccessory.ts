@@ -121,7 +121,7 @@ export class ExamplePlatformAccessory {
 
     
     const url = 'http://192.168.1.201:5000/pins/2';
-    
+
     interface Platform_Device {
           id: number
           name: string
@@ -143,13 +143,13 @@ export class ExamplePlatformAccessory {
         });
     }
     
-    const exampleDevices = getDevice();
+    //const exampleDevices = getDevice();
 
 
     // loop over the discovered devices and register each one if it has not already been registered
-    for (const device of await exampleDevices) {
-      callback(null, device.on);
-    } 
+    //for (const device of await exampleDevices) {
+    callback(null, false);
+    //} 
   }
 
   /**
