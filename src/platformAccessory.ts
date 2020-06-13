@@ -1,5 +1,6 @@
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
 import { ExampleHomebridgePlatform } from './platform';
+
 import fetch from 'node-fetch';
 
 /**
@@ -29,6 +30,7 @@ export class ExamplePlatformAccessory {
       .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Default-Manufacturer')
       .setCharacteristic(this.platform.Characteristic.Model, 'Default-Model')
       .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.uuid);
+
 
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
@@ -79,7 +81,7 @@ export class ExamplePlatformAccessory {
     const url = 'http://192.168.1.201:5000/pins/' + this.accessory.context.device.id;
 
     // post body data 
-    const user = {
+    const accessoryInfo = {
       id: this.accessory.context.device.id,
       on: this.exampleStates.On,
     };
@@ -87,15 +89,14 @@ export class ExamplePlatformAccessory {
     // request options
     const options = {
       method: 'PATCH',
-      body: JSON.stringify(user),
+      body: JSON.stringify(accessoryInfo),
       headers: {'Content-Type': 'application/json'},
     };
 
     // send POST request
     fetch(url, options)
       .then(res => res.json())
-      // eslint-disable-next-line no-console
-      .then(res => console.log(res));
+      .then(res => this.platform.log.debug(this.accessory.context.device.name, ' Error: ', res));
 
     // you must call the callback function
     callback(null);
@@ -118,7 +119,7 @@ export class ExamplePlatformAccessory {
 
     // implement your own code to check if the device is on
 
-
+    
     const url = 'http://192.168.1.201:5000/pins/' + this.accessory.context.device.id;
 
     interface Platform_Device {
@@ -143,8 +144,11 @@ export class ExamplePlatformAccessory {
     }
     const isOn = getDevice();
 
+    this.platform.log.debug('Get Characteristic On ->', (await isOn).concat);
+
+
     //for (const isOn of await device) {
-    this.platform.log.debug('Get Characteristic On ->', isOn[0]);
+    this.platform.log.debug('Get Characteristic On ->', isOn);
     // you must call the callback function
     // the first argument should be null if there were no errors
     // the second argument should be the value to return
@@ -157,7 +161,7 @@ export class ExamplePlatformAccessory {
    * These are sent when the user changes the state of an accessory, for example, changing the Brightness
    */
 
-  async setBrightness(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+  setBrightness(value: CharacteristicValue, callback: CharacteristicSetCallback) {
 
     // implement your own code to set the brightness
 
@@ -166,7 +170,7 @@ export class ExamplePlatformAccessory {
     const url = 'http://192.168.1.201:5000/pins/' + this.accessory.context.device.id;
 
     // post body data 
-    const user = {
+    const accessoryInfo = {
       id: this.accessory.context.device.id,
       brightness: this.exampleStates.Brightness,
     };
@@ -174,15 +178,14 @@ export class ExamplePlatformAccessory {
     // request options
     const options = {
       method: 'PATCH',
-      body: JSON.stringify(user),
+      body: JSON.stringify(accessoryInfo),
       headers: {'Content-Type': 'application/json'},
     };
 
     // send POST request
     fetch(url, options)
       .then(res => res.json())
-      // eslint-disable-next-line no-console
-      .then(res => console.log(res));
+      .then(res => this.platform.log.debug(this.accessory.context.device.name, ' Error: ', res));
 
     // you must call the callback function
     callback(null);
