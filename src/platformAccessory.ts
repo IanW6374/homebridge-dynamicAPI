@@ -120,8 +120,8 @@ export class ExamplePlatformAccessory {
     // implement your own code to check if the device is on
 
     
-    const url = 'http://192.168.1.201:5000/pins/' + this.accessory.context.device.id;
-
+    const url = 'http://192.168.1.201:5000/pins/2';
+    
     interface Platform_Device {
           id: number
           name: string
