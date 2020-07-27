@@ -42,8 +42,8 @@ bower_components
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
-# Certificate directories
-certs/
+# Certificate or Keys
+*.pem
 
 # Dependency directories
 node_modules/
