@@ -1,60 +1,134 @@
 {
-  "pluginAlias": "homebridge-plugin-garage",
+  "pluginAlias": "Garage",
   "pluginType": "platform",
   "singular": true,
   "schema": {
     "type": "object",
     "properties": {
-      "uri": {
-        "title": "URI",
+      "url": {
+        "title": "URL",
         "type": "string",
         "required": true,
-        "default": "http://localhost:5000/pins",
+        "default": "http://<host>:<port>/<endpoint>/",
         "format": "uri",
-        "description": "The URI of remote API"
+        "description": "The URL of remote API"
       },
-      "API_Door": {
-        "title": "Door GPIO",
+      "rejectInvalidCert": {
+        "title": "Reject Invalid Certificate",
+        "type": "boolean",
+        "default": true,
+        "description": "Terminate the HTTPS connection if the Remote API presents an invalid certificate"
+      },
+      "apiPort": {
+        "title": "Local API Port",
         "type": "integer",
         "required": true,
-        "default": "1",
-        "description": "The PIN number for Door"
+        "default": "8001",
+        "description": "The Port of local API"
       },
-      "API_GarageLight": {
-        "title": "Garage Light GPIO",
-        "type": "integer",
-        "required": true,
-        "default": "2",
-        "description": "The PIN number for Garage Light"
+      "https": {
+        "title": "Enable HTTPS",
+        "type": "boolean",
+        "default": false
       },
-      "API_SecurityLight1": {
-        "title": "Security Light 1 GPIO",
-        "type": "integer",
+      "httpsCertPath": {
+        "title": "HTTPS Certificate",
+        "type": "string",
         "required": true,
-        "default": "3",
-        "description": "The PIN number for Security Light 1"
+        "default": "/<certificate path>/<certificate>",
+        "description": "Certificate for HTTPS API Service"
       },
-      "API_SecurityLight2": {
-        "title": "Security Light 2 GPIO",
-        "type": "integer",
+      "httpsKeyPath": {
+        "title": "HTTPS Private Key",
+        "type": "string",
         "required": true,
-        "default": "4",
-        "description": "The PIN number for Security Light 2"
+        "default": "/private key path>/<private key>",
+        "description": "Private Key for HTTPS API Service"
       },
-      "API_SecurityLight3": {
-        "title": "Security Light 3 GPIO",
-        "type": "integer",
-        "required": true,
-        "default": "5",
-        "description": "The PIN number for Security Light 3"
+      "jwt": {
+        "title": "Enable JSON Web Token (JWT) Secure API",
+        "type": "boolean",
+        "default": false
       },
-      "API_SecurityLight4": {
-        "title": "Security Light 4 GPIO",
-        "type": "integer",
+      "jwtAudience": {
+        "title": "JWT Audience",
+        "type": "string",
         "required": true,
-        "default": "3",
-        "description": "The PIN number for Security Light 4"
+        "default": "https://<JWT API Application>/",
+        "format": "uri",
+        "description": "The JWT Audience for the remote / local API"
+      },
+      "jwtIssuer": {
+        "title": "JWT Issuer",
+        "type": "string",
+        "required": true,
+        "default": "https://<JWT Issuer>/",
+        "format": "uri",
+        "description": "The JWT Issuer for the remote / local API"
+      },
+      "jwtClientID": {
+        "title": "JWT Client ID",
+        "type": "string",
+        "required": true,
+        "default": "<JWT Client ID>",
+        "description": "The JWT Client ID for the remote / local API"
+      },
+      "jwtClientSecret": {
+        "title": "JWT Client Secret",
+        "type": "string",
+        "required": true,
+        "default": "<JWT Client Secret>",
+        "description": "The JWT Client Secret for the remote / local API"
       }
     }
-  }
+  },
+  "layout":[
+  {
+    "key": "RemoteAPI",
+    "type": "section",
+    "title": "Remote API",
+    "expandable": false,
+    "expanded": true,
+    "items": [
+      "url",
+      "rejectInvalidCert"
+      ]
+  },
+  {
+    "key": "LocalAPI",
+    "type": "section",
+    "title": "Local API",
+    "expandable": true,
+    "expanded": false,
+    "items": [
+      "apiPort"
+      ]
+  },
+  {
+    "key": "https",
+    "type": "section",
+    "title": "HTTPS",
+    "expandable": true,
+    "expanded": false,
+    "items": [
+      "https",
+      "httpsCertPath",
+      "httpsKeyPath"
+      ]
+  },
+  {  
+    "key": "jwt",
+    "type": "section",
+    "title": "JSON Web Token (JWT) Secure API",
+    "expandable": true,
+    "expanded": false,
+    "items": [
+      "jwt",
+      "jwtAudience",
+      "jwtIssuer",
+      "jwtClientID",
+      "jwtClientSecret"
+      ]
+    }
+   ]
 }
