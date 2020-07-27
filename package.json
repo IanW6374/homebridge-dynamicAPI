@@ -1,5 +1,4 @@
 {
-  "private": true,
   "displayName": "homebridge-plugin-garage",
   "name": "homebridge-plugin-garage",
   "version": "1.0.0",
