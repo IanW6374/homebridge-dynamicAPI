@@ -1,6 +1,10 @@
 # Ignore compiled code
 dist
 
+# Certificate or Keys
+*.pem
+
+
 # ------------- Defaults ------------- #
 
 # Logs
@@ -41,9 +45,6 @@ bower_components
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
-
-# Certificate or Keys
-*.pem
 
 # Dependency directories
 node_modules/

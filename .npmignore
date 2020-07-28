@@ -1,6 +1,9 @@
 # Ignore source code
 src
 
+# Certificate or Keys
+*.pem
+
 # ------------- Defaults ------------- #
 
 # eslint
