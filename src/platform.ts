@@ -54,13 +54,12 @@ export class GaragePlatform implements DynamicPlatformPlugin {
      */
     this.api.on('didFinishLaunching', async () => {
       log.debug('Executed didFinishLaunching callback');
-      // Run the method to discover / register your devices as accessories
-      //const devices: any[] = await this.discoverDevices();
 
-      const devices = await this.discoverDevices();
+      // Discover / register your devices as accessories
+      await this.discoverDevices();
 
       // Start Platform API Server
-      this.webServer(devices);
+      this.webServer();
     });
   }
 
@@ -91,20 +90,22 @@ export class GaragePlatform implements DynamicPlatformPlugin {
 
         // see if an accessory with the same uuid has already been registered and restored from
         // the cached devices we stored in the `configureAccessory` method above
-        const existingDevice = this.accessories.find(accessory => accessory.UUID === uuid);
+        const accessory = this.accessories.find(accessory => accessory.UUID === uuid);
 
-        if (existingDevice) {
+        if (accessory) {
           // the accessory already exists
-          this.log.info(`Restoring existing accessory from cache: ${existingDevice.displayName}`);
+          this.log.info(`Restoring existing accessory from cache: ${accessory.displayName}`);
+          
+          // Update accessory context
+          accessory.context.device = device;
 
+          // create the accessory handler for the restored accessory
           if(device.type === 'Garage Door Opener') {
-            // create the accessory handler for the restored accessory
-            this.deviceObjects.push(new GarageDoorAccessory(this, existingDevice));
+            this.deviceObjects.push(new GarageDoorAccessory(this, accessory));
           } else if (device.type === 'Lightbulb') {
-            // create the accessory handler for the restored accessory
-            this.deviceObjects.push(new LightAccessory(this, existingDevice));
+            this.deviceObjects.push(new LightAccessory(this, accessory));
           } else {
-            this.log.info(`Platform does not support device: ${existingDevice.displayName}: ${device.type}`);
+            this.log.info(`Platform does not support device: ${accessory.displayName}: ${device.type}`);
           }
 
         } else {
@@ -117,46 +118,67 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           // store a copy of the device object in the `accessory.context`
           accessory.context.device = device;
 
+          // create the accessory handler for the restored accessory
           if(device.type === 'Garage Door Opener') {
-            // create the accessory handler for the restored accessory
             this.deviceObjects.push(new GarageDoorAccessory(this, accessory));
           } else if (device.type === 'Lightbulb') {
-            // create the accessory handler for the restored accessory
             this.deviceObjects.push(new LightAccessory(this, accessory));
           } else {
             this.log.debug(`Platform does not support device: ${device.name}: ${device.type}`);
           }
-        
+          
+          // Add the new accessory to the accessories cache
+          this.accessories.push(accessory);
+
           // link the accessory to your platform
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
         }
       } 
-      return discoveredDevices;
-    }
-    
+      // Delete an old accessory
+      if (this.accessories.length > discoveredDevices.length) {
+
+        for (let accessoryIndex = this.accessories.length - 1; accessoryIndex > 0; accessoryIndex --) {
+          if (discoveredDevices.findIndex(devices => devices.uuid === this.accessories[accessoryIndex].context.device.uuid) === -1) { 
+            const accessory = this.accessories[accessoryIndex];
+            this.api.unregisterPlatformAccessories('PLUGIN_NAME', 'PLATFORM_NAME', [accessory]);
+            this.log.info(`Deleting old accessory:  ${this.accessories[accessoryIndex].context.device.name}`);
+            this.accessories.splice(accessoryIndex, 1);
+          }
+        }
+      }
+    } 
   }
 
 
-  updateDevice(devices, req, res) {
-     
-    const deviceIndex = devices.findIndex(devices => devices.uuid === req.body.uuid);
+  updateDevice(req, res) {
 
-    if (deviceIndex === -1){
-      this.log.debug(`Error: Device with uuid: ${req.body.uuid} not found`);
-      res.send(`Error: Device with uuid: ${req.body.uuid} not found`);
-
+    if (this.deviceObjects.length === 0) {
+      this.log.debug('Error: Cannot update device characteristic - No devices synchronised from Remote API Endpoint');
+      res.status(404).send('Error: Error: Cannot update device characteristic - No devices synchronised from Remote API Endpoint');
     } else {
-      if (devices[deviceIndex].type === 'Garage Door Opener') {
-        this.deviceObjects[deviceIndex].updateCharacteristic(req.body.stateActual, req.body.stateTarget, req.body.obstruction);
-        res.send(JSON.stringify(devices[deviceIndex]));
+     
+      const accessoryIndex = this.accessories.findIndex(accessory => accessory.context.device.uuid === req.body.uuid);
 
-      } else if (devices[deviceIndex].type === 'Lightbulb') {
-        this.deviceObjects[deviceIndex].updateCharacteristic(req.body.on, req.body.brightness, req.body.colour);
-        res.send(JSON.stringify(devices[deviceIndex]));
-      
+      if (accessoryIndex === -1){
+        this.log.debug(`Error: Device with uuid: ${req.body.uuid} not found`);
+        res.status(404).send(`Error: Device with uuid: ${req.body.uuid} not found`);
+
       } else {
-        this.log.debug(`Error: Device with type: ${req.body.type} not found`);
-        res.status(404).send(`Error: Device with type: ${req.body.type} not found`);
+
+        const deviceIndex = this.accessories[accessoryIndex].context.device.id;
+
+        if (this.accessories[accessoryIndex].context.device.type === 'Garage Door Opener') {
+          this.deviceObjects[deviceIndex].updateCharacteristic(req.body.stateActual, req.body.stateTarget, req.body.obstruction);
+          res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
+
+        } else if (this.accessories[accessoryIndex].context.device.type === 'Lightbulb') {
+          this.deviceObjects[deviceIndex].updateCharacteristic(req.body.on, req.body.brightness, req.body.colour);
+          res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
+      
+        } else {
+          this.log.debug(`Error: Device with type: ${req.body.type} not found`);
+          res.status(404).send(`Error: Device with type: ${req.body.type} not found`);
+        }
       }
     }
   }
@@ -199,7 +221,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
   }
 
   
-  async webServer(devices) {
+  async webServer() {
 
     const WebApp = express();
     WebApp.use(express.json());
@@ -258,13 +280,16 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     if (!error) {   
       // Create API GET route response
       let getAPI = '';
-      if (devices === undefined) {
+
+      if (this.deviceObjects.length === 0) {
         getAPI = 'No devices synchronised from Remote API Endpoint';
       } else {
-        devices.forEach(item => {
-          getAPI += `id: ${item.id} name: ${item.name} uuid: ${item.uuid} type: ${item.type}<br>`;
+        this.accessories.forEach(item => {
+          // eslint-disable-next-line max-len
+          getAPI += `id: ${item.context.device.id} name: ${item.context.device.name} uuid: ${item.context.device.uuid} type: ${item.context.device.type}<br>`;
         });
       }
+
       // Create API GET API Route
       WebApp.get( '/', ( req, res ) => {
         res.send(`${PLATFORM_NAME} Homebridge Platform API Running <br><br>${getAPI}`);
@@ -272,9 +297,9 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     
       // Create API PATCH API Route
       if (this.config.jwt === true){
-        WebApp.patch('/api/', checkJwt, checkScopes, async (req, res) => this.updateDevice(devices, req, res));
+        WebApp.patch('/api/', checkJwt, checkScopes, async (req, res) => this.updateDevice(req, res));
       } else {
-        WebApp.patch('/api/', async (req, res) => this.updateDevice(devices, req, res));
+        WebApp.patch('/api/', async (req, res) => this.updateDevice(req, res));
       }
 
       // Create API Error Handler
