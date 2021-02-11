@@ -93,7 +93,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
 
         if (accessory) {
           // the accessory already exists
-          this.log.info(`INFO:  Restored Device (${device.displayName}) from Remote API`);
+          this.log.info(`INFO:  Restored Device (${device.name}) from Remote API`);
           
           // Update accessory context
           accessory.context.device = device;
@@ -104,7 +104,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           } else if (device.type === 'Lightbulb') {
             this.deviceObjects.push(new LightAccessory(this, accessory));
           } else {
-            this.log.info(`WARNING:  Device Type Not Supported (${device.displayName} | ${device.type})`);
+            this.log.info(`WARNING:  Device Type Not Supported (${device.name} | ${device.type})`);
           }
 
         } else {
