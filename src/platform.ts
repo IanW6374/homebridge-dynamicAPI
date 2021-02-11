@@ -9,7 +9,7 @@ import fs from 'fs';
 import jwt from 'express-jwt';
 import jwtAuthz from 'express-jwt-authz';
 import jwksRsa from 'jwks-rsa';
-
+import os from 'os';
 
 /**
  * Homebridge Platform
@@ -227,6 +227,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     WebApp.use(express.json());
     const options = {};
     let error = false;
+    const IPV4 = this.getIPAddress();
 
     // Secure API - jwt
     const checkJwt = jwt({
@@ -268,7 +269,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
 
       if (!error) {
         https.createServer(options, WebApp).listen(this.config.apiPort, () => {
-          this.log.info(`Local API service started at https://localhost:${this.config.apiPort}`);
+          this.log.info(`Local API service started at https://${IPV4}:${this.config.apiPort}`);
         });
       } 
     } else {
@@ -374,6 +375,20 @@ export class GaragePlatform implements DynamicPlatformPlugin {
         });
       return response;
     }
+  }
+  
+  getIPAddress() {
+    const interfaces = os.networkInterfaces();
+    for (const devName in interfaces) {
+      const iface = interfaces[devName];
+      for (let i = 0; i < iface!.length; i++) {
+        const alias = iface![i];
+        if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+          return alias.address;
+        }
+      }
+    }
+    return '0.0.0.0';
   }
 }
   
