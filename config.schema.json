@@ -5,6 +5,13 @@
   "schema": {
     "type": "object",
     "properties": {
+      "remoteName": {
+        "title": "Name",
+        "type": "string",
+        "default": "Remote API",
+        "format": "uri",
+        "description": "The display name of remote API"
+      },
       "url": {
         "title": "URL",
         "type": "string",
@@ -90,6 +97,7 @@
     "expandable": false,
     "expanded": true,
     "items": [
+      "remoteName",
       "url",
       "rejectInvalidCert"
       ]
