@@ -28,8 +28,9 @@
       },
       "apiIP": {
         "title": "Local API IP Address",
-        "type": "ipv4",
+        "type": "string",
         "default": "",
+        "format": "ipv4",
         "description": "Force the IP address used for the Direct Connect API - Leave blank for automatic assignment of IP address"
       },
       "apiPort": {
