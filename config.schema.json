@@ -26,6 +26,12 @@
         "default": true,
         "description": "Terminate the HTTPS connection if the Remote API presents an invalid certificate"
       },
+      "apiIP": {
+        "title": "Local API IP Address",
+        "type": "ipv4",
+        "default": "",
+        "description": "Force the IP address used for the Direct Connect API - Leave blank for automatic assignment of IP address"
+      },
       "apiPort": {
         "title": "Local API Port",
         "type": "integer",
@@ -103,12 +109,13 @@
       ]
   },
   {
-    "key": "LocalAPI",
+    "key": "DirectConnectAPI",
     "type": "section",
-    "title": "Local API",
+    "title": "Direct Connect API",
     "expandable": true,
     "expanded": false,
     "items": [
+      "apiIP",
       "apiPort"
       ]
   },

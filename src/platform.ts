@@ -226,7 +226,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     WebApp.use(express.json());
     const options = {};
     let error = false;
-    const IPV4 = this.getIPAddress();
+    const apiIP = this.config.apiIP || this.getIPAddress();
 
     // Secure API - jwt
     const checkJwt = jwt({
@@ -267,13 +267,13 @@ export class GaragePlatform implements DynamicPlatformPlugin {
       }
 
       if (!error) {
-        https.createServer(options, WebApp).listen(this.config.apiPort, () => {
-          this.log.info(`INFO:  Direct Connect service started at https://${IPV4}:${this.config.apiPort}`);
+        https.createServer(options, WebApp).listen(this.config.apiPort, apiIP, () => {
+          this.log.info(`INFO:  Direct Connect service started at https://${apiIP}:${this.config.apiPort}`);
         });
       } 
     } else {
-      WebApp.listen(this.config.apiPort, () => {
-        this.log.info(`INFO:  Direct Connect service started at http://${IPV4}:${this.config.apiPort}`);
+      WebApp.listen(this.config.apiPort, apiIP, () => {
+        this.log.info(`INFO:  Direct Connect service started at http://${apiIP}:${this.config.apiPort}`);
       });
     }
 
