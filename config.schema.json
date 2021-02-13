@@ -56,7 +56,7 @@
         "title": "HTTPS Private Key",
         "type": "string",
         "required": true,
-        "default": "/private key path>/<private key>",
+        "default": "/<private key path>/<private key>",
         "description": "Private Key for HTTPS API Service"
       },
       "jwt": {

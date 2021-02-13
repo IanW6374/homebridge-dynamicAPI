@@ -35,7 +35,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     public readonly api: API,
     
   ) {
-    this.log.debug(`INFO:  Finished initializing ${PLATFORM_NAME} platform`);
+    this.log.info(`INFO:  Finished initializing ${PLATFORM_NAME} platform`);
 
     this.deviceObjects = [];
     this.apiJWT = {
@@ -123,7 +123,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           } else if (device.type === 'Lightbulb') {
             this.deviceObjects.push(new LightAccessory(this, accessory));
           } else {
-            this.log.debug(`WARNING:  Device Type Not Supported (${device.displayName} | ${device.type})`);
+            this.log.info(`WARNING:  Device Type Not Supported (${device.displayName} | ${device.type})`);
           }
           
           // Add the new accessory to the accessories cache
@@ -152,14 +152,14 @@ export class GaragePlatform implements DynamicPlatformPlugin {
   updateDevice(req, res) {
 
     if (this.deviceObjects.length === 0) {
-      this.log.debug(`WARNING: No devices synchronised from ${this.config.remoteName}`);
+      this.log.info(`WARNING: No devices synchronised from ${this.config.remoteName}`);
       res.status(404).send(`WARNING: No devices synchronised from ${this.config.remoteName}`);
     } else {
      
       const accessoryIndex = this.accessories.findIndex(accessory => accessory.context.device.uuid === req.body.uuid);
 
       if (accessoryIndex === -1){
-        this.log.debug(`WARNING: Device with uuid: ${req.body.uuid} not found`);
+        this.log.info(`WARNING: Device with uuid: ${req.body.uuid} not found`);
         res.status(404).send(`WARNING: Device with uuid: ${req.body.uuid} not found`);
 
       } else {
@@ -175,7 +175,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
       
         } else {
-          this.log.debug(`WARNING: Device with type: (${req.body.name} | ${req.body.type}) not found`);
+          this.log.info(`WARNING: Device with type: (${req.body.name} | ${req.body.type}) not found`);
           res.status(404).send(`WARNING: Device with type: (${req.body.name} | ${req.body.type}) not found`);
         }
       }
@@ -216,7 +216,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           };
         } 
       })
-      .catch(error => this.log.debug(`ERROR:  ${this.config.remoteName} JWT Fetch Failure: ${error}`));
+      .catch(error => this.log.info(`ERROR:  ${this.config.remoteName} JWT Fetch Failure: ${error}`));
   }
 
   
@@ -253,7 +253,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
         const cert = fs.readFileSync(`${this.config.httpsCertPath}`);
         options['cert'] = cert;
       } catch (err) {
-        this.log.debug(`ERROR:  Direct Connect HTTPS Certificate file does not exist or unreadable: ${err}`);
+        this.log.info(`ERROR:  Direct Connect HTTPS Certificate file does not exist or unreadable: ${err}`);
         error = true;
       }
 
@@ -262,7 +262,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
         const key = fs.readFileSync(`${this.config.httpsKeyPath}`);
         options['key'] = key;
       } catch (err) {
-        this.log.debug(`ERROR:  Direct Connect HTTPS Private Key file does not exist or unreadable: ${err}`);
+        this.log.info(`ERROR:  Direct Connect HTTPS Private Key file does not exist or unreadable: ${err}`);
         error = true;
       }
 
@@ -307,7 +307,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
         if (!err) {
           return next();
         } else {
-          this.log.debug(`ERROR:  Local API Service: ${err}`);
+          this.log.info(`ERROR:  Local API Service: ${err}`);
           res.status(err.status).send(`ERROR:  API Service: ${err}`);
         }
       });
@@ -369,7 +369,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           return res;
         })
         .catch(error => {
-          this.log.debug(`ERROR:  ${this.config.remoteName} ${method} Failure: ${error}`);
+          this.log.info(`ERROR:  ${this.config.remoteName} ${method} Failure: ${error}`);
           return error;
         });
       return response;
