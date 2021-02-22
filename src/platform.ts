@@ -267,15 +267,6 @@ export class GaragePlatform implements DynamicPlatformPlugin {
       }
 
       if (!error) {
-<<<<<<< HEAD
-        https.createServer(options, WebApp).listen(this.config.apiPort, '192.168.1.200', () => {
-          this.log.info(`INFO:  Direct Connect service started at https://${IPV4}:${this.config.apiPort}`);
-        });
-      } 
-    } else {
-      WebApp.listen(this.config.apiPort, '192.168.1.200', () => {
-        this.log.info(`INFO:  Direct Connect service started at http://${IPV4}:${this.config.apiPort}`);
-=======
         https.createServer(options, WebApp).listen(this.config.apiPort, apiIP, () => {
           this.log.info(`INFO:  Direct Connect service started at https://${apiIP}:${this.config.apiPort}`);
         });
@@ -283,7 +274,6 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     } else {
       WebApp.listen(this.config.apiPort, apiIP, () => {
         this.log.info(`INFO:  Direct Connect service started at http://${apiIP}:${this.config.apiPort}`);
->>>>>>> eb23e279203977e44550f9acf40cb2404e2cc07d
       });
     }
 
@@ -317,13 +307,8 @@ export class GaragePlatform implements DynamicPlatformPlugin {
         if (!err) {
           return next();
         } else {
-<<<<<<< HEAD
           this.log.debug(`ERROR:  Direct Connect API Service: ${err}`);
           res.status(err.status).send(`[${this.config.remoteName}]  ERROR:  Direct Connect API Service: ${err}`);
-=======
-          this.log.info(`ERROR:  Local API Service: ${err}`);
-          res.status(err.status).send(`ERROR:  API Service: ${err}`);
->>>>>>> eb23e279203977e44550f9acf40cb2404e2cc07d
         }
       });
       return;
