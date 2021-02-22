@@ -23,7 +23,6 @@ export class GaragePlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
 
   // this is used to track platform accessories for dynamic updates
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deviceObjects: any[];
 
   // this is used to store the remote API JSON Web Token (JWT)
@@ -191,7 +190,6 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     await fetch(url, {
       method: 'POST',
       headers: {'content-type': 'application/json'},
-      // eslint-disable-next-line max-len
       body: `{"client_id":"${this.config.jwtClientID}","client_secret":"${this.config.jwtClientSecret}","audience":"${this.config.jwtAudience}","grant_type":"client_credentials"}`,
     })
       .then(res => {
@@ -285,7 +283,6 @@ export class GaragePlatform implements DynamicPlatformPlugin {
         getAPI = `[${this.config.remoteName}]  WARNING:  No devices synchronised`;
       } else {
         this.accessories.forEach(item => {
-          // eslint-disable-next-line max-len
           getAPI += `id: ${item.context.device.id} name: ${item.context.device.name} uuid: ${item.context.device.uuid} type: ${item.context.device.type}<br>`;
         });
       }
