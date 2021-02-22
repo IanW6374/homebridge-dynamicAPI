@@ -245,7 +245,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     const checkScopes = jwtAuthz([ 'write:api' ]);
     
 
-    // Initialise API
+    // Initialise Direct Connect API
     if (this.config.https === true){
 
       try {
@@ -267,6 +267,15 @@ export class GaragePlatform implements DynamicPlatformPlugin {
       }
 
       if (!error) {
+<<<<<<< HEAD
+        https.createServer(options, WebApp).listen(this.config.apiPort, '192.168.1.200', () => {
+          this.log.info(`INFO:  Direct Connect service started at https://${IPV4}:${this.config.apiPort}`);
+        });
+      } 
+    } else {
+      WebApp.listen(this.config.apiPort, '192.168.1.200', () => {
+        this.log.info(`INFO:  Direct Connect service started at http://${IPV4}:${this.config.apiPort}`);
+=======
         https.createServer(options, WebApp).listen(this.config.apiPort, apiIP, () => {
           this.log.info(`INFO:  Direct Connect service started at https://${apiIP}:${this.config.apiPort}`);
         });
@@ -274,15 +283,16 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     } else {
       WebApp.listen(this.config.apiPort, apiIP, () => {
         this.log.info(`INFO:  Direct Connect service started at http://${apiIP}:${this.config.apiPort}`);
+>>>>>>> eb23e279203977e44550f9acf40cb2404e2cc07d
       });
     }
 
     if (!error) {   
-      // Create API GET route response
+      // Create Direct Connect API GET Route Response
       let getAPI = '';
 
       if (this.deviceObjects.length === 0) {
-        getAPI = 'WARNING:  No devices synchronised from ${this.config.remoteName}';
+        getAPI = `[${this.config.remoteName}]  WARNING:  No devices synchronised`;
       } else {
         this.accessories.forEach(item => {
           // eslint-disable-next-line max-len
@@ -290,25 +300,30 @@ export class GaragePlatform implements DynamicPlatformPlugin {
         });
       }
 
-      // Create API GET API Route
+      // Create Direct Connect API GET API Route
       WebApp.get( '/', ( req, res ) => {
-        res.send(`${PLATFORM_NAME} Homebridge Platform API Running <br><br>${getAPI}`);
+        res.send(`[${this.config.remoteName}]  INFO:  Homebridge Direct Connect API Running <br><br>${getAPI}`);
       });
     
-      // Create API PATCH API Route
+      // Create Direct Connect API PATCH API Route
       if (this.config.jwt === true){
         WebApp.patch('/api/', checkJwt, checkScopes, async (req, res) => this.updateDevice(req, res));
       } else {
         WebApp.patch('/api/', async (req, res) => this.updateDevice(req, res));
       }
 
-      // Create API Error Handler
+      // Create Direct Connect API Error Handler
       WebApp.use((err, req, res, next) => {
         if (!err) {
           return next();
         } else {
+<<<<<<< HEAD
+          this.log.debug(`ERROR:  Direct Connect API Service: ${err}`);
+          res.status(err.status).send(`[${this.config.remoteName}]  ERROR:  Direct Connect API Service: ${err}`);
+=======
           this.log.info(`ERROR:  Local API Service: ${err}`);
           res.status(err.status).send(`ERROR:  API Service: ${err}`);
+>>>>>>> eb23e279203977e44550f9acf40cb2404e2cc07d
         }
       });
       return;

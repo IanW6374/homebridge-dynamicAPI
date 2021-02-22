@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
 import { GaragePlatform } from './platform';
 
@@ -64,22 +65,22 @@ export class GarageDoorAccessory {
 
   
   /**
-   * Handle "SET" requests from Platform API
+   * Handle "SET" requests from Direct Connect API
    * These are sent when the user changes the state of an accessory locally on the device.
    */
   async updateCharacteristic (actualDoorState, targetDoorState, obstructionDetected) {
 
     if (obstructionDetected !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.ObstructionDetected, obstructionDetected);
-      this.platform.log.info(`${this.accessory.context.device.name} API Set Obstruction Detected <- ${obstructionDetected}`);
+      this.platform.log.info(`  [Direct Connect] [Device Event]: INFO: (${this.accessory.context.device.name}) [Obstruction Dectected] is ${obstructionDetected}`);
     }
     if (actualDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.CurrentDoorState, actualDoorState);
-      this.platform.log.info(`${this.accessory.context.device.name} API Set Current Door State <- ${actualDoorState}`);
+      this.platform.log.info(`  [Direct Connect] [Device Event]: INFO: (${this.accessory.context.device.name}) [Door State] is ${actualDoorState}`);
     }
     if (targetDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.TargetDoorState, targetDoorState);
-      this.platform.log.info(`${this.accessory.context.device.name} API Set Target Door State <- ${targetDoorState}`);
+      this.platform.log.info(`  [Direct Connect] [Device Event]: INFO: (${this.accessory.context.device.name}) [Door Target State] is ${targetDoorState}`);
     }
   }
 
@@ -92,7 +93,7 @@ export class GarageDoorAccessory {
     const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, accessoryInfo);
 
     if (!device['errno']) {
-      this.platform.log.info(`${this.accessory.context.device.name} Set ${characteristic} -> ${value}`);
+      this.platform.log.info(`  [HOMEKIT] [Device Event]: INFO: (${this.accessory.context.device.name}) [${characteristic}] set to ${value}`);
     }
 
     callback(null);
@@ -105,7 +106,7 @@ export class GarageDoorAccessory {
 
     const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, '');
     if (!device['errno']) {
-      this.platform.log.info(`${this.accessory.context.device.name} Get ${characteristic} -> ${device[characteristic]}`);
+      this.platform.log.info(`  [HOMEKIT] [Device Event]: INFO: (${this.accessory.context.device.name}) [${characteristic}] is ${device[characteristic]}`);
       callback(null, device[characteristic]);
     } else {
       callback(null);
