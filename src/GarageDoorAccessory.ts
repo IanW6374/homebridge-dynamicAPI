@@ -83,7 +83,7 @@ export class GarageDoorAccessory {
 
     if (obstructionDetected !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.ObstructionDetected, obstructionDetected);
-      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Obstruction Detected] is ${obstructionDetected}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Obstruction Detected] is ${this.friendlyState[obstructionDetected]}`);
     }
     if (actualDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.CurrentDoorState, actualDoorState);
