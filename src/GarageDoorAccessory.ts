@@ -72,15 +72,15 @@ export class GarageDoorAccessory {
 
     if (obstructionDetected !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.ObstructionDetected, obstructionDetected);
-      this.platform.log.info(`  [Direct Connect] [Device Event]: INFO: (${this.accessory.context.device.name}) [Obstruction Dectected] is ${obstructionDetected}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Obstruction Dectected] is ${obstructionDetected}`);
     }
     if (actualDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.CurrentDoorState, actualDoorState);
-      this.platform.log.info(`  [Direct Connect] [Device Event]: INFO: (${this.accessory.context.device.name}) [Door State] is ${actualDoorState}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door State] is ${actualDoorState}`);
     }
     if (targetDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.TargetDoorState, targetDoorState);
-      this.platform.log.info(`  [Direct Connect] [Device Event]: INFO: (${this.accessory.context.device.name}) [Door Target State] is ${targetDoorState}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door Target State] is ${targetDoorState}`);
     }
   }
 
@@ -93,7 +93,7 @@ export class GarageDoorAccessory {
     const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, accessoryInfo);
 
     if (!device['errno']) {
-      this.platform.log.info(`  [HOMEKIT] [Device Event]: INFO: (${this.accessory.context.device.name}) [${characteristic}] set to ${value}`);
+      this.platform.log.info(`[HOMEKIT] [Device Event]: (${this.accessory.context.device.name}) [${characteristic}] set to ${value}`);
     }
 
     callback(null);
@@ -106,7 +106,7 @@ export class GarageDoorAccessory {
 
     const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, '');
     if (!device['errno']) {
-      this.platform.log.info(`  [HOMEKIT] [Device Event]: INFO: (${this.accessory.context.device.name}) [${characteristic}] is ${device[characteristic]}`);
+      this.platform.log.info(`[HOMEKIT] [Device Info]: (${this.accessory.context.device.name}) [${characteristic}] is ${device[characteristic]}`);
       callback(null, device[characteristic]);
     } else {
       callback(null);

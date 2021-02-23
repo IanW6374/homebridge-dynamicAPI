@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
 import { GaragePlatform } from './platform';
 
@@ -69,23 +70,23 @@ export class LightAccessory {
   async updateCharacteristic (on, brightness, colour, hue, saturation) {
     
     this.service.updateCharacteristic(this.platform.Characteristic.On, on);
-    this.platform.log.info(`${this.accessory.context.device.name} API Set On <- ${on}`);
+    this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [On] is ${on}`);
     
     if (this.accessory.context.device.brightness !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.Brightness, brightness);
-      this.platform.log.info(`${this.accessory.context.device.name} API Set Brightness <- ${brightness}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Brightness] is ${brightness}`);
     }
     if (this.accessory.context.device.colour !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.ColorTemperature, colour);
-      this.platform.log.info(`${this.accessory.context.device.name} API Set Colour <- ${colour}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Colour] is ${colour}`);
     }
     if (this.accessory.context.device.hue !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.Hue, hue);
-      this.platform.log.info(`${this.accessory.context.device.name} API Set Hue <- ${hue}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Hue] is ${hue}`);
     }
     if (this.accessory.context.device.saturation !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.Saturation, saturation);
-      this.platform.log.info(`${this.accessory.context.device.name} API Set Saturation <- ${saturation}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Saturation] is ${saturation}`);
     }
     
   }
@@ -100,7 +101,7 @@ export class LightAccessory {
     const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, accessoryInfo);
 
     if (!device['errno']) {
-      this.platform.log.info(`${this.accessory.context.device.name} Set ${characteristic} -> ${value}`);
+      this.platform.log.info(`[Homekit] [Device Event]: (${this.accessory.context.device.name}) [${characteristic}] set to ${value}`);
     }
 
     callback(null);
@@ -114,7 +115,7 @@ export class LightAccessory {
 
     const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, '');
     if (!device['errno']) {
-      this.platform.log.info(`${this.accessory.context.device.name} Get ${characteristic} -> ${device[characteristic]}`);
+      this.platform.log.info(`[Homekit] [Device Info]: (${this.accessory.context.device.name}) [${characteristic}] is ${device[characteristic]}`);
       callback(null, device[characteristic]);
     } else {
       callback(null);

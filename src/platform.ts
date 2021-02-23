@@ -36,7 +36,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     public readonly api: API,
     
   ) {
-    this.log.info(`INFO:  Finished initializing ${PLATFORM_NAME} platform`);
+    this.log.info(`[Platform Event]:  ${PLATFORM_NAME} platform Initialized`);
 
     this.deviceObjects = [];
     this.apiJWT = {
@@ -68,7 +68,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
    * It should be used to setup event handlers for characteristics and update respective values.
    */
   configureAccessory(accessory: PlatformAccessory) {
-    this.log.info(`INFO:  Restored Device (${accessory.displayName}) from Homebridge cache`);
+    this.log.info(`[Platform Event]:  Restored Device (${accessory.displayName}) from Homebridge Cache`);
 
     // add the restored accessory to the accessories cache so we can track if it has already been registered
 
@@ -94,7 +94,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
 
         if (accessory) {
           // the accessory already exists
-          this.log.info(`INFO:  Restored Device (${device.name}) from ${this.config.remoteName}`);
+          this.log.info(`[Platform Event]:  Restored Device (${device.name}) from ${this.config.remoteName}`);
           
           // Update accessory context
           accessory.context.device = device;
@@ -105,12 +105,12 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           } else if (device.type === 'Lightbulb') {
             this.deviceObjects.push(new LightAccessory(this, accessory));
           } else {
-            this.log.info(`WARNING:  Device Type Not Supported (${device.name} | ${device.type})`);
+            this.log.info(`[Platform Warning]:  Device Type Not Supported (${device.name} | ${device.type})`);
           }
 
         } else {
           // the accessory does not yet exist, so we need to create it
-          this.log.info(`INFO:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteName}`);
+          this.log.info(`[Platfrom Event]:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteName}`);
 
           // create a new accessory
           const accessory = new this.api.platformAccessory(device.name, uuid);
@@ -124,7 +124,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           } else if (device.type === 'Lightbulb') {
             this.deviceObjects.push(new LightAccessory(this, accessory));
           } else {
-            this.log.info(`WARNING:  Device Type Not Supported (${device.displayName} | ${device.type})`);
+            this.log.info(`[Platform Warning]:  Device Type Not Supported (${device.displayName} | ${device.type})`);
           }
           
           // Add the new accessory to the accessories cache
@@ -141,7 +141,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           if (discoveredDevices.findIndex(devices => devices.uuid === this.accessories[accessoryIndex].context.device.uuid) === -1) { 
             const accessory = this.accessories[accessoryIndex];
             this.api.unregisterPlatformAccessories('PLUGIN_NAME', 'PLATFORM_NAME', [accessory]);
-            this.log.info(`INFO:  Deleted Device (${this.accessories[accessoryIndex].context.device.name})`);
+            this.log.info(`[Platform Event]:  Deleted Device (${this.accessories[accessoryIndex].context.device.name})`);
             this.accessories.splice(accessoryIndex, 1);
           }
         }
@@ -153,14 +153,14 @@ export class GaragePlatform implements DynamicPlatformPlugin {
   updateDevice(req, res) {
 
     if (this.deviceObjects.length === 0) {
-      this.log.info(`WARNING: No devices synchronised from ${this.config.remoteName}`);
+      this.log.info(`[Platform Warning]: No devices synchronised from ${this.config.remoteName}`);
       res.status(404).send(`WARNING: No devices synchronised from ${this.config.remoteName}`);
     } else {
      
       const accessoryIndex = this.accessories.findIndex(accessory => accessory.context.device.uuid === req.body.uuid);
 
       if (accessoryIndex === -1){
-        this.log.info(`WARNING: Device with uuid: ${req.body.uuid} not found`);
+        this.log.info(`[Platform Warning]: Device with uuid: ${req.body.uuid} not found`);
         res.status(404).send(`WARNING: Device with uuid: ${req.body.uuid} not found`);
 
       } else {
@@ -176,7 +176,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
       
         } else {
-          this.log.info(`WARNING: Device with type: (${req.body.name} | ${req.body.type}) not found`);
+          this.log.info(`[Platform Warning]: Device with type: (${req.body.name} | ${req.body.type}) not found`);
           res.status(404).send(`WARNING: Device with type: (${req.body.name} | ${req.body.type}) not found`);
         }
       }
@@ -196,7 +196,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
     })
       .then(res => {
         if (res.ok) { // res.status >= 200 && res.status < 300
-          this.log.info(`INFO:  ${this.config.remoteName} JWT Fetch Success: ${res.status}`);
+          this.log.info(`[Platform Info]:  ${this.config.remoteName} JWT Fetch Success: ${res.status}`);
           return res;
         } else {
           throw new Error(`${res.status}`);
@@ -216,7 +216,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           };
         } 
       })
-      .catch(error => this.log.info(`ERROR:  ${this.config.remoteName} JWT Fetch Failure: ${error}`));
+      .catch(error => this.log.info(`[Platform Error]:  ${this.config.remoteName} JWT Fetch Failure: ${error}`));
   }
 
   
@@ -253,7 +253,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
         const cert = fs.readFileSync(`${this.config.httpsCertPath}`);
         options['cert'] = cert;
       } catch (err) {
-        this.log.info(`ERROR:  Direct Connect HTTPS Certificate file does not exist or unreadable: ${err}`);
+        this.log.info(`[Platform Error]:  Direct Connect HTTPS Certificate file does not exist or unreadable: ${err}`);
         error = true;
       }
 
@@ -262,18 +262,18 @@ export class GaragePlatform implements DynamicPlatformPlugin {
         const key = fs.readFileSync(`${this.config.httpsKeyPath}`);
         options['key'] = key;
       } catch (err) {
-        this.log.info(`ERROR:  Direct Connect HTTPS Private Key file does not exist or unreadable: ${err}`);
+        this.log.info(`[Platform Error]:  Direct Connect HTTPS Private Key file does not exist or unreadable: ${err}`);
         error = true;
       }
 
       if (!error) {
         https.createServer(options, WebApp).listen(this.config.apiPort, apiIP, () => {
-          this.log.info(`INFO:  Direct Connect service started at https://${apiIP}:${this.config.apiPort}`);
+          this.log.info(`[Platform Info]:  Direct Connect service started at https://${apiIP}:${this.config.apiPort}`);
         });
       } 
     } else {
       WebApp.listen(this.config.apiPort, apiIP, () => {
-        this.log.info(`INFO:  Direct Connect service started at http://${apiIP}:${this.config.apiPort}`);
+        this.log.info(`[Platform Info]:  Direct Connect service started at http://${apiIP}:${this.config.apiPort}`);
       });
     }
 
@@ -306,7 +306,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
         if (!err) {
           return next();
         } else {
-          this.log.debug(`ERROR:  Direct Connect API Service: ${err}`);
+          this.log.debug(`[Platform Error]:  Direct Connect API Service: ${err}`);
           res.status(err.status).send(`[${this.config.remoteName}]  ERROR:  Direct Connect API Service: ${err}`);
         }
       });
@@ -321,7 +321,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
       await this.getAuthToken(); 
     }
     if (this.apiJWT.status === false && this.config.jwt === true) {
-      this.log.info(`ERROR:  No valid ${this.config.remoteName} JWT to discover devices`);
+      this.log.info(`[Platform Error]:  No valid ${this.config.remoteName} JWT to discover devices`);
 
       const error = {'errno': `No valid ${this.config.remoteName} JWT to discover devices`};
       return error;
@@ -368,7 +368,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
           return res;
         })
         .catch(error => {
-          this.log.info(`ERROR:  ${this.config.remoteName} ${method} Failure: ${error}`);
+          this.log.info(`[Platform Error]:  ${this.config.remoteName} ${method} Failure: ${error}`);
           return error;
         });
       return response;
