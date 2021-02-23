@@ -55,7 +55,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
      */
     this.api.on('didFinishLaunching', async () => {
 
-      // Discover / register your devices as accessories
+      // Discover & register your devices as accessories
       await this.discoverDevices();
 
       // Start Platform API Server

@@ -7,6 +7,7 @@ import { GaragePlatform } from './platform';
  */
 export class GarageDoorAccessory {
   private service: Service
+  Friendly
 
   constructor(
     private readonly platform: GaragePlatform,
@@ -14,12 +15,19 @@ export class GarageDoorAccessory {
   ) {
 
     // set accessory information
+
+    this.Friendly = {
+      '0':'Open',
+      '1':'Closed',
+      '2':'Opening',
+      '3':'Closing',
+    };
+
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
       .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Home')
       .setCharacteristic(this.platform.Characteristic.Model, 'Garage Door')
       .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.uuid);
 
-    // eslint-disable-next-line max-len
     this.service = this.accessory.getService(this.platform.Service.GarageDoorOpener) || this.accessory.addService(this.platform.Service.GarageDoorOpener);
 
     // set the service name - this is what is displayed as the default name on the Home app
@@ -38,7 +46,7 @@ export class GarageDoorAccessory {
    
       
     /*
-     * Polling of Garage Door Status - Not required due to dynamic updates are implemented
+     * Polling of Garage Door Status - Not required due to dynamic updates being implemented
      *
      
       setInterval(async () => {
@@ -72,15 +80,15 @@ export class GarageDoorAccessory {
 
     if (obstructionDetected !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.ObstructionDetected, obstructionDetected);
-      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Obstruction Dectected] is ${obstructionDetected}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Obstruction Detected] is ${obstructionDetected}`);
     }
     if (actualDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.CurrentDoorState, actualDoorState);
-      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door State] is ${actualDoorState}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door State] is ${this.Friendly(actualDoorState)}`);
     }
     if (targetDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.TargetDoorState, targetDoorState);
-      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door Target State] is ${targetDoorState}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door Target State] is ${this.Friendly(targetDoorState)}`);
     }
   }
 
@@ -93,7 +101,7 @@ export class GarageDoorAccessory {
     const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, accessoryInfo);
 
     if (!device['errno']) {
-      this.platform.log.info(`[HOMEKIT] [Device Event]: (${this.accessory.context.device.name}) [${characteristic}] set to ${value}`);
+      this.platform.log.info(`[Homekit] [Device Event]: (${this.accessory.context.device.name}) [${characteristic}] set to ${value}`);
     }
 
     callback(null);
@@ -106,7 +114,7 @@ export class GarageDoorAccessory {
 
     const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, '');
     if (!device['errno']) {
-      this.platform.log.info(`[HOMEKIT] [Device Info]: (${this.accessory.context.device.name}) [${characteristic}] is ${device[characteristic]}`);
+      this.platform.log.info(`[Homekit] [Device Info]: (${this.accessory.context.device.name}) [${characteristic}] is ${device[characteristic]}`);
       callback(null, device[characteristic]);
     } else {
       callback(null);
