@@ -1,7 +1,7 @@
 {
   "displayName": "homebridge-plugin-garage",
   "name": "homebridge-plugin-garage",
-  "version": "1.0.10-beta.6",
+  "version": "1.0.10-beta.7",
   "description": "Homebridge plugin to control garage door and lights",
   "license": "Apache-2.0",
   "repository": {
