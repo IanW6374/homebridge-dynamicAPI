@@ -7,7 +7,7 @@ import { GaragePlatform } from './platform';
  */
 export class GarageDoorAccessory {
   private service: Service
-  Friendly
+  friendlyState
 
   constructor(
     private readonly platform: GaragePlatform,
@@ -16,13 +16,14 @@ export class GarageDoorAccessory {
 
     // set accessory information
 
-    this.Friendly = {
-      true: 'true',
-      false: 'false',
+    this.friendlyState = {
+      true: 'True',
+      false: 'False',
       0:'Open',
       1:'Closed',
       2:'Opening',
       3:'Closing',
+      4:'Stopped',
     };
 
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -86,11 +87,11 @@ export class GarageDoorAccessory {
     }
     if (actualDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.CurrentDoorState, actualDoorState);
-      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door State] is ${this.Friendly[actualDoorState]}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door State] is ${this.friendlyState[actualDoorState]}`);
     }
     if (targetDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.TargetDoorState, targetDoorState);
-      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door Target State] is ${this.Friendly[targetDoorState]}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door Target State] is ${this.friendlyState[targetDoorState]}`);
     }
   }
 
