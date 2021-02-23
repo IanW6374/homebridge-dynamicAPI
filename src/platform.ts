@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { GarageDoorAccessory } from './GarageDoorAccessory';
@@ -23,6 +24,7 @@ export class GaragePlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
 
   // this is used to track platform accessories for dynamic updates
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deviceObjects: any[];
 
   // this is used to store the remote API JSON Web Token (JWT)
