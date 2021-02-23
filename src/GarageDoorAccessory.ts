@@ -7,7 +7,7 @@ import { GaragePlatform } from './platform';
  */
 export class GarageDoorAccessory {
   private service: Service
-  friendlyState
+  private friendlyState
 
   constructor(
     private readonly platform: GaragePlatform,
