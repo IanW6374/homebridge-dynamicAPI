@@ -84,11 +84,11 @@ export class GarageDoorAccessory {
     }
     if (actualDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.CurrentDoorState, actualDoorState);
-      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door State] is ${this.Friendly(actualDoorState)}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door State] is ${this.Friendly.actualDoorState}`);
     }
     if (targetDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.TargetDoorState, targetDoorState);
-      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door Target State] is ${this.Friendly(targetDoorState)}`);
+      this.platform.log.info(`[Direct Connect] [Device Info]: (${this.accessory.context.device.name}) [Door Target State] is ${this.Friendly.targetDoorState}`);
     }
   }
 
