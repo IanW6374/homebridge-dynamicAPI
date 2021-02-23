@@ -101,9 +101,8 @@ export class LightAccessory {
     const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, accessoryInfo);
 
     if (!device['errno']) {
-      this.platform.log.info(`[Homekit] [Device Event]: (${this.accessory.context.device.name}) [${characteristic}] set to ${value}`);
+      this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name}) [${characteristic}] set to ${value}`);
     }
-
     callback(null);
   }
 
@@ -115,7 +114,7 @@ export class LightAccessory {
 
     const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, '');
     if (!device['errno']) {
-      this.platform.log.info(`[Homekit] [Device Info]: (${this.accessory.context.device.name}) [${characteristic}] is ${device[characteristic]}`);
+      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name}) [${characteristic}] is ${device[characteristic]}`);
       callback(null, device[characteristic]);
     } else {
       callback(null);
