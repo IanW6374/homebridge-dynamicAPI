@@ -6,9 +6,9 @@
 </p>
 
 
-# homebridge-plugin-garage
+# homebridge-dynamicAPI
 
-This is a Homebridge dynamic platform plugin which exposes a garage door accessory and light accessories through a remote API.  
+This is a Homebridge dynamic platform plugin which exposes light and garage door remote accessories through a remote API.  
 
 ### Features:
 
