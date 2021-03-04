@@ -1,9 +1,9 @@
 /**
  * Homebridge Platform Name
  */
-export const PLATFORM_NAME = 'Garage';
+export const PLATFORM_NAME = 'dynamicAPI';
 
 /**
  * Homebridge Plugin Name
  */
-export const PLUGIN_NAME = 'homebridge-plugin-garage';
+export const PLUGIN_NAME = 'homebridge-dynamicAPI';

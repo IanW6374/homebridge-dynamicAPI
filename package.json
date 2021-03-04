@@ -1,15 +1,15 @@
 {
-  "displayName": "homebridge-plugin-garage",
-  "name": "homebridge-plugin-garage",
+  "displayName": "homebridge-dynamicAPI",
+  "name": "homebridge-dynamicapi",
   "version": "1.0.10-beta.16",
-  "description": "Homebridge plugin to control garage door and lights",
+  "description": "This is a Homebridge dynamic platform plugin which exposes remote light and garage door accessories through a remote API",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/IanW69/homebridge-plugin-garage.git"
+    "url": "git://github.com/IanW69/homebridge-dynamicAPI.git"
   },
   "bugs": {
-    "url": "https://github.com/IanW69/homebridge-plugin-garage/issues"
+    "url": "https://github.com/IanW69/homebridge-dynamicAPI/issues"
   },
   "engines": {
     "node": ">=10.17.0",

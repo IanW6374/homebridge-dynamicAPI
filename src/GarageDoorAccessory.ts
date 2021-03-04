@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
-import { GaragePlatform } from './platform';
+import { dynamicAPIPlatform } from './platform';
 
 /**
  * Garage Door Accessory
@@ -10,7 +10,7 @@ export class GarageDoorAccessory {
   private friendlyState
 
   constructor(
-    private readonly platform: GaragePlatform,
+    private readonly platform: dynamicAPIPlatform,
     private readonly accessory: PlatformAccessory,
   ) {
 

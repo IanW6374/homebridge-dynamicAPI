@@ -16,7 +16,7 @@ import os from 'os';
  * Homebridge Platform
  */
 
-export class GaragePlatform implements DynamicPlatformPlugin {
+export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
   public readonly Service: typeof Service = this.api.hap.Service;
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
