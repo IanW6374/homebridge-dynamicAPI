@@ -83,68 +83,73 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
     if (!discoveredDevices['errno']) {
 
       // loop over the discovered devices and register each one if it has not already been registered
-      for (const device of discoveredDevices) {
+      try {
+        for (const device of discoveredDevices) {
 
-        // generate a unique id for the accessory
-        const uuid = this.api.hap.uuid.generate(device.uuid);
+          // generate a unique id for the accessory
+          const uuid = this.api.hap.uuid.generate(device.uuid);
 
-        // see if an accessory with the same uuid has already been registered and restored from
-        // the cached devices we stored in the `configureAccessory` method above
-        const accessory = this.accessories.find(accessory => accessory.UUID === uuid);
+          // see if an accessory with the same uuid has already been registered and restored from
+          // the cached devices we stored in the `configureAccessory` method above
+          const accessory = this.accessories.find(accessory => accessory.UUID === uuid);
 
-        if (accessory) {
+          if (accessory) {
           // the accessory already exists
-          this.log.info(`[Platform Event]:  Restored Device (${device.name}) from ${this.config.remoteName}`);
+            this.log.info(`[Platform Event]:  Restored Device (${device.name}) from ${this.config.remoteName}`);
           
-          // Update accessory context
-          accessory.context.device = device;
+            // Update accessory context
+            accessory.context.device = device;
 
-          // create the accessory handler for the restored accessory
-          if(device.type === 'Garage Door Opener') {
-            this.deviceObjects.push(new GarageDoorAccessory(this, accessory));
-          } else if (device.type === 'Lightbulb') {
-            this.deviceObjects.push(new LightAccessory(this, accessory));
+            // create the accessory handler for the restored accessory
+            if(device.type === 'Garage Door Opener') {
+              this.deviceObjects.push(new GarageDoorAccessory(this, accessory));
+            } else if (device.type === 'Lightbulb') {
+              this.deviceObjects.push(new LightAccessory(this, accessory));
+            } else {
+              this.log.info(`[Platform Warning]:  Device Type Not Supported (${device.name} | ${device.type})`);
+            }
+
           } else {
-            this.log.info(`[Platform Warning]:  Device Type Not Supported (${device.name} | ${device.type})`);
-          }
-
-        } else {
           // the accessory does not yet exist, so we need to create it
-          this.log.info(`[Platfrom Event]:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteName}`);
+            this.log.info(`[Platfrom Event]:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteName}`);
 
-          // create a new accessory
-          const accessory = new this.api.platformAccessory(device.name, uuid);
+            // create a new accessory
+            const accessory = new this.api.platformAccessory(device.name, uuid);
 
-          // store a copy of the device object in the `accessory.context`
-          accessory.context.device = device;
+            // store a copy of the device object in the `accessory.context`
+            accessory.context.device = device;
 
-          // create the accessory handler for the restored accessory
-          if(device.type === 'Garage Door Opener') {
-            this.deviceObjects.push(new GarageDoorAccessory(this, accessory));
-          } else if (device.type === 'Lightbulb') {
-            this.deviceObjects.push(new LightAccessory(this, accessory));
-          } else {
-            this.log.info(`[Platform Warning]:  Device Type Not Supported (${device.displayName} | ${device.type})`);
-          }
+            // create the accessory handler for the restored accessory
+            if(device.type === 'Garage Door Opener') {
+              this.deviceObjects.push(new GarageDoorAccessory(this, accessory));
+            } else if (device.type === 'Lightbulb') {
+              this.deviceObjects.push(new LightAccessory(this, accessory));
+            } else {
+              this.log.info(`[Platform Warning]:  Device Type Not Supported (${device.displayName} | ${device.type})`);
+            }
           
-          // Add the new accessory to the accessories cache
-          this.accessories.push(accessory);
+            // Add the new accessory to the accessories cache
+            this.accessories.push(accessory);
 
-          // link the accessory to your platform
-          this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
-        }
-      } 
-      // Delete an old accessory
-      if (this.accessories.length > discoveredDevices.length) {
+            // link the accessory to your platform
+            this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+          }
+        } 
+    
+        // Delete an old accessory
+        if (this.accessories.length > discoveredDevices.length) {
 
-        for (let accessoryIndex = this.accessories.length - 1; accessoryIndex > 0; accessoryIndex --) {
-          if (discoveredDevices.findIndex(devices => devices.uuid === this.accessories[accessoryIndex].context.device.uuid) === -1) { 
-            const accessory = this.accessories[accessoryIndex];
-            this.api.unregisterPlatformAccessories('PLUGIN_NAME', 'PLATFORM_NAME', [accessory]);
-            this.log.info(`[Platform Event]:  Deleted Device (${this.accessories[accessoryIndex].context.device.name})`);
-            this.accessories.splice(accessoryIndex, 1);
+          for (let accessoryIndex = this.accessories.length - 1; accessoryIndex > 0; accessoryIndex --) {
+            if (discoveredDevices.findIndex(devices => devices.uuid === this.accessories[accessoryIndex].context.device.uuid) === -1) { 
+              const accessory = this.accessories[accessoryIndex];
+              this.api.unregisterPlatformAccessories('PLUGIN_NAME', 'PLATFORM_NAME', [accessory]);
+              this.log.info(`[Platform Event]:  Deleted Device (${this.accessories[accessoryIndex].context.device.name})`);
+              this.accessories.splice(accessoryIndex, 1);
+            }
           }
         }
+      } catch {
+        this.log.info('[Platform Warning]:  Invalid Respone from remote API');
       }
     } 
   }
