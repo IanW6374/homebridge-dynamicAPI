@@ -333,7 +333,8 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
     } else {
 
-      const url = (this.config.url.endsWith('/')) ? this.config.url + endpoint : this.config.url + '/' + endpoint;
+      const urlScheme = (this.config.https) ? 'http://' : 'https://';
+      const url = (this.config.url.endsWith('/')) ? urlScheme + this.config.url + endpoint : urlScheme + this.config.url + '/' + endpoint;
       const jwtHeader = {'content-type': 'application/json', 'authorization': `${this.apiJWT.token_type} ${this.apiJWT.access_token}`};
       const headers = (this.config.jwt) ? jwtHeader : {'content-type': 'application/json'};
 

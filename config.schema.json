@@ -10,21 +10,15 @@
         "type": "string",
         "default": "Remote API",
         "format": "uri",
-        "description": "The display name of remote API"
+        "description": "The display name of the remote API"
       },
       "url": {
         "title": "URL",
         "type": "string",
         "required": true,
-        "default": "http://<host>:<port>/<endpoint>/",
+        "default": "<host>:<port>/<endpoint>/",
         "format": "uri",
-        "description": "The URL of remote API"
-      },
-      "rejectInvalidCert": {
-        "title": "Reject Invalid Certificate",
-        "type": "boolean",
-        "default": true,
-        "description": "Terminate the HTTPS connection if the Remote API presents an invalid certificate"
+        "description": "The host and endpoint of the remote API"
       },
       "apiIP": {
         "title": "Local API IP Address",
@@ -44,6 +38,12 @@
         "title": "Enable HTTPS",
         "type": "boolean",
         "default": false
+      },
+      "rejectInvalidCert": {
+        "title": "Reject Invalid Certificate",
+        "type": "boolean",
+        "default": true,
+        "description": "Terminate the HTTPS connection if the Remote API presents an invalid certificate"
       },
       "httpsCertPath": {
         "title": "HTTPS Certificate",
@@ -105,8 +105,7 @@
     "expanded": true,
     "items": [
       "remoteName",
-      "url",
-      "rejectInvalidCert"
+      "url"
       ]
   },
   {
@@ -128,6 +127,7 @@
     "expanded": false,
     "items": [
       "https",
+      "rejectInvalidCert",
       "httpsCertPath",
       "httpsKeyPath"
       ]
