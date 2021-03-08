@@ -106,7 +106,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
             } else if (device.type === 'Lightbulb') {
               this.deviceObjects.push(new LightAccessory(this, accessory));
             } else {
-              this.log.info(`[Platform Warning]:  Device Type Not Supported (${device.name} | ${device.type})`);
+              this.log.warn(`[Platform Warning]:  Device Type Not Supported (${device.name} | ${device.type})`);
             }
 
           } else {
@@ -125,7 +125,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
             } else if (device.type === 'Lightbulb') {
               this.deviceObjects.push(new LightAccessory(this, accessory));
             } else {
-              this.log.info(`[Platform Warning]:  Device Type Not Supported (${device.displayName} | ${device.type})`);
+              this.log.warn(`[Platform Warning]:  Device Type Not Supported (${device.displayName} | ${device.type})`);
             }
           
             // Add the new accessory to the accessories cache
@@ -149,7 +149,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           }
         }
       } catch {
-        this.log.info('[Platform Warning]:  Invalid Respone from remote API');
+        this.log.error('[Platform Error]:  Invalid respone from remote API');
       }
     } 
   }
@@ -158,14 +158,14 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
   updateDevice(req, res) {
 
     if (this.deviceObjects.length === 0) {
-      this.log.info(`[Platform Warning]: No devices synchronised from ${this.config.remoteName}`);
+      this.log.warn(`[Platform Warning]: No devices synchronised from ${this.config.remoteName}`);
       res.status(404).send(`WARNING: No devices synchronised from ${this.config.remoteName}`);
     } else {
      
       const accessoryIndex = this.accessories.findIndex(accessory => accessory.context.device.uuid === req.body.uuid);
 
       if (accessoryIndex === -1){
-        this.log.info(`[Platform Warning]: Device with uuid: ${req.body.uuid} not found`);
+        this.log.warn(`[Platform Warning]: Device with uuid: ${req.body.uuid} not found`);
         res.status(404).send(`WARNING: Device with uuid: ${req.body.uuid} not found`);
 
       } else {
@@ -221,7 +221,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           };
         } 
       })
-      .catch(error => this.log.info(`[Platform Error]:  ${this.config.remoteName} JWT Fetch Failure: ${error}`));
+      .catch(error => this.log.error(`[Platform Error]:  ${this.config.remoteName} JWT Fetch Failure: ${error}`));
   }
 
   
@@ -258,7 +258,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
         const cert = fs.readFileSync(`${this.config.httpsCertPath}`);
         options['cert'] = cert;
       } catch (err) {
-        this.log.info(`[Platform Error]:  Direct Connect HTTPS Certificate file does not exist or unreadable: ${err}`);
+        this.log.error(`[Platform Error]:  Direct Connect HTTPS Certificate file does not exist or unreadable: ${err}`);
         error = true;
       }
 
@@ -267,7 +267,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
         const key = fs.readFileSync(`${this.config.httpsKeyPath}`);
         options['key'] = key;
       } catch (err) {
-        this.log.info(`[Platform Error]:  Direct Connect HTTPS Private Key file does not exist or unreadable: ${err}`);
+        this.log.error(`[Platform Error]:  Direct Connect HTTPS Private Key file does not exist or unreadable: ${err}`);
         error = true;
       }
 
@@ -326,7 +326,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       await this.getAuthToken(); 
     }
     if (this.apiJWT.status === false && this.config.jwt === true) {
-      this.log.info(`[Platform Error]:  No valid ${this.config.remoteName} JWT to discover devices`);
+      this.log.error(`[Platform Error]:  No valid ${this.config.remoteName} JWT to discover devices`);
 
       const error = {'errno': `No valid ${this.config.remoteName} JWT to discover devices`};
       return error;
@@ -373,7 +373,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           return res;
         })
         .catch(error => {
-          this.log.info(`[Platform Error]:  ${this.config.remoteName} ${method} Failure: ${error}`);
+          this.log.error(`[Platform Error]:  ${this.config.remoteName} ${method} Failure: ${error}`);
           return error;
         });
       return response;
