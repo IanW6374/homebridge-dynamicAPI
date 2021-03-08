@@ -6,4 +6,4 @@ export const PLATFORM_NAME = 'dynamicAPI';
 /**
  * Homebridge Plugin Name
  */
-export const PLUGIN_NAME = 'Homebridge dynamicAPI';
+export const PLUGIN_NAME = 'homebridge-dynamicapi';
