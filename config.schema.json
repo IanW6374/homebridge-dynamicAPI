@@ -17,14 +17,14 @@
         "required": true,
         "default": "<host>:<port>/<endpoint>/"
       },
-      "directConnectIP": {
+      "directConnectApiIP": {
         "title": "Direct Connect API IP Address",
         "type": "string",
         "default": "",
         "format": "ipv4",
         "description": "Force the IP address used for the Direct Connect API - Leave blank for automatic assignment of IP address"
       },
-      "directConnectPort": {
+      "directConnectApiPort": {
         "title": "Direct Connect API Port",
         "type": "string",
         "required": true,
