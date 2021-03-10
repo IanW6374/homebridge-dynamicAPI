@@ -6,16 +6,24 @@
     "type": "object",
     "properties": {
       "remoteApiDisplayName": {
-        "title": "Name",
+        "title": "Display Name",
         "type": "string",
         "default": "Remote API",
         "description": "The display name of the remote API"
       },
       "remoteApiURL": {
-        "title": "Host",
+        "title": "URL",
         "type": "string",
         "required": true,
-        "default": "<host>:<port>/<endpoint>/"
+        "default": "http(s)://<host>:<port>/<endpoint>/",
+        "format": "url",
+        "description": "The URL of the Remote API"
+      },
+      "remoteApiRejectInvalidCert": {
+        "title": "Reject Invalid Certificate",
+        "type": "boolean",
+        "default": true,
+        "description": "Terminate the HTTPS connection if the Remote API presents an invalid certificate"
       },
       "directConnectApiIP": {
         "title": "Direct Connect API IP Address",
@@ -31,30 +39,24 @@
         "default": "8001",
         "description": "The Port of Direct Connect API"
       },
-      "https": {
+      "directConnectApiHttps": {
         "title": "Enable HTTPS",
         "type": "boolean",
         "default": false
       },
-      "rejectInvalidCert": {
-        "title": "Reject Invalid Certificate",
-        "type": "boolean",
-        "default": true,
-        "description": "Terminate the HTTPS connection if the Remote API presents an invalid certificate"
-      },
-      "httpsCertPath": {
+      "directConnectApiHttpsCertPath": {
         "title": "HTTPS Certificate",
         "type": "string",
         "required": true,
         "default": "/<certificate path>/<certificate>",
-        "description": "Certificate for HTTPS Direct Connect Service"
+        "description": "Certificate for HTTPS Direct Connect API Service"
       },
-      "httpsKeyPath": {
+      "directConnectApiHttpsKeyPath": {
         "title": "HTTPS Private Key",
         "type": "string",
         "required": true,
         "default": "/<private key path>/<private key>",
-        "description": "Private Key for HTTPS Direct Connect Service"
+        "description": "Private Key for HTTPS Direct Connect API Service"
       },
       "jwt": {
         "title": "Enable JSON Web Token (JWT) Secure API",
@@ -102,7 +104,8 @@
     "expanded": true,
     "items": [
       "remoteApiDisplayName",
-      "remoteApiURL"
+      "remoteApiURL",
+      "remoteApiRejectInvalidCert"
       ]
   },
   {
@@ -113,20 +116,10 @@
     "expanded": false,
     "items": [
       "directConnectApiIP",
-      "directConnectApiPort"
-      ]
-  },
-  {
-    "key": "https",
-    "type": "section",
-    "title": "HTTPS",
-    "expandable": true,
-    "expanded": false,
-    "items": [
-      "https",
-      "rejectInvalidCert",
-      "httpsCertPath",
-      "httpsKeyPath"
+      "directConnectApiPort",
+      "directConnectApiHttps",
+      "directConnectApiHttpsCertPath",
+      "directConnectApiHttpsKeyPath"
       ]
   },
   {  

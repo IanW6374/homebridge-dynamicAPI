@@ -251,11 +251,11 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
     
 
     // Initialise Direct Connect API
-    if (this.config.https === true){
+    if (this.config.directConnectHttps === true){
 
       try {
-        fs.accessSync (`${this.config.httpsCertPath}`, fs.constants.R_OK);
-        const cert = fs.readFileSync(`${this.config.httpsCertPath}`);
+        fs.accessSync (`${this.config.directConnectHttpsCertPath}`, fs.constants.R_OK);
+        const cert = fs.readFileSync(`${this.config.directConnectHttpsCertPath}`);
         options['cert'] = cert;
       } catch (err) {
         this.log.error(`[Platform Error]:  Direct Connect HTTPS Certificate file does not exist or unreadable: ${err}`);
@@ -263,8 +263,8 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       }
 
       try {
-        fs.accessSync (`${this.config.httpsKeyPath}`, fs.constants.R_OK);
-        const key = fs.readFileSync(`${this.config.httpsKeyPath}`);
+        fs.accessSync (`${this.config.directConnectHttpsKeyPath}`, fs.constants.R_OK);
+        const key = fs.readFileSync(`${this.config.directConnectHttpsKeyPath}`);
         options['key'] = key;
       } catch (err) {
         this.log.error(`[Platform Error]:  Direct Connect HTTPS Private Key file does not exist or unreadable: ${err}`);
@@ -333,14 +333,13 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
     } else {
 
-      const urlScheme = (this.config.https) ? 'https://' : 'http://';
-      const url = (this.config.remoteApiURL.endsWith('/')) ? urlScheme + this.config.remoteApiURL + endpoint : urlScheme + this.config.remoteApiURL + '/' + endpoint;
+      const url = (this.config.remoteApiURL.endsWith('/')) ? this.config.remoteApiURL + endpoint : this.config.remoteApiURL + '/' + endpoint;
       const jwtHeader = {'content-type': 'application/json', 'authorization': `${this.apiJWT.token_type} ${this.apiJWT.access_token}`};
       const headers = (this.config.jwt) ? jwtHeader : {'content-type': 'application/json'};
 
       let options = {};
 
-      if (this.config.rejectInvalidCert === false && this.config.https === true) {
+      if (this.config.remoteApiRejectInvalidCert === false && this.config.remoteApiURL.indexOf('https') === 0) {
         const agent = new https.Agent({
           rejectUnauthorized: false,
         });
