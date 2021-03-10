@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge dynamicAPI",
   "name": "homebridge-dynamicapi",
-  "version": "1.0.10-beta.32",
+  "version": "1.0.10-beta.33",
   "description": "This is a Homebridge dynamic platform plugin which exposes remote light and garage door accessories through a remote API",
   "license": "Apache-2.0",
   "repository": {
