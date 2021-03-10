@@ -70,23 +70,23 @@ export class LightAccessory {
   async updateCharacteristic (on, brightness, colour, hue, saturation) {
     
     this.service.updateCharacteristic(this.platform.Characteristic.On, on);
-    this.platform.log.info(`[${this.platform.config.remoteName}] [Device Event]: (${this.accessory.context.device.name}) [On] is ${on}`);
+    this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [On] is ${on}`);
     
     if (this.accessory.context.device.brightness !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.Brightness, brightness);
-      this.platform.log.info(`[${this.platform.config.remoteName}] [Device Event]: (${this.accessory.context.device.name}) [Brightness] is ${brightness}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Brightness] is ${brightness}`);
     }
     if (this.accessory.context.device.colour !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.ColorTemperature, colour);
-      this.platform.log.info(`[${this.platform.config.remoteName}] [Device Event]: (${this.accessory.context.device.name}) [Colour] is ${colour}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Colour] is ${colour}`);
     }
     if (this.accessory.context.device.hue !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.Hue, hue);
-      this.platform.log.info(`[${this.platform.config.remoteName}] [Device Event]: (${this.accessory.context.device.name}) [Hue] is ${hue}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Hue] is ${hue}`);
     }
     if (this.accessory.context.device.saturation !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.Saturation, saturation);
-      this.platform.log.info(`[${this.platform.config.remoteName}] [Device Event]: (${this.accessory.context.device.name}) [Saturation] is ${saturation}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Saturation] is ${saturation}`);
     }
     
   }

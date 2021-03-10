@@ -287,7 +287,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       let getAPI = '';
 
       if (this.deviceObjects.length === 0) {
-        getAPI = `[${this.config.remoteApiDisplayName}]  WARNING:  No devices synchronised`;
+        getAPI = `[${this.config.remoteApiDisplayName}] [Platform Info]:  No devices synchronised`;
       } else {
         this.accessories.forEach(item => {
           getAPI += `id: ${item.context.device.id} name: ${item.context.device.name} uuid: ${item.context.device.uuid} type: ${item.context.device.type}<br>`;
@@ -296,7 +296,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
       // Create Direct Connect API GET API Route
       WebApp.get( '/', ( req, res ) => {
-        res.send(`[${this.config.remoteApiDisplayName}]  INFO:  Homebridge Direct Connect API Running <br><br>${getAPI}`);
+        res.send(`[${this.config.remoteApiDisplayName}] [Platform Info]:  Homebridge Direct Connect API Running <br><br>${getAPI}`);
       });
     
       // Create Direct Connect API PATCH API Route
