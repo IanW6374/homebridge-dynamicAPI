@@ -251,11 +251,11 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
     
 
     // Initialise Direct Connect API
-    if (this.config.directConnectHttps === true){
+    if (this.config.directConnectApiHttps === true){
 
       try {
-        fs.accessSync (`${this.config.directConnectHttpsCertPath}`, fs.constants.R_OK);
-        const cert = fs.readFileSync(`${this.config.directConnectHttpsCertPath}`);
+        fs.accessSync (`${this.config.directConnectApiHttpsCertPath}`, fs.constants.R_OK);
+        const cert = fs.readFileSync(`${this.config.directConnectApiHttpsCertPath}`);
         options['cert'] = cert;
       } catch (err) {
         this.log.error(`[Platform Error]:  Direct Connect HTTPS Certificate file does not exist or unreadable: ${err}`);
@@ -263,8 +263,8 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       }
 
       try {
-        fs.accessSync (`${this.config.directConnectHttpsKeyPath}`, fs.constants.R_OK);
-        const key = fs.readFileSync(`${this.config.directConnectHttpsKeyPath}`);
+        fs.accessSync (`${this.config.directConnectApiHttpsKeyPath}`, fs.constants.R_OK);
+        const key = fs.readFileSync(`${this.config.directConnectApiHttpsKeyPath}`);
         options['key'] = key;
       } catch (err) {
         this.log.error(`[Platform Error]:  Direct Connect HTTPS Private Key file does not exist or unreadable: ${err}`);
@@ -338,8 +338,6 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       const headers = (this.config.jwt) ? jwtHeader : {'content-type': 'application/json'};
 
       let options = {};
-      
-      this.log.error(`Test:  ${this.config.remoteApiURL} - ${this.config.remoteApiURL.indexOf('https')}`);
 
       if (this.config.remoteApiRejectInvalidCert === false && this.config.remoteApiURL.indexOf('https') === 0) {
         const agent = new https.Agent({
