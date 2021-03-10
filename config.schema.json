@@ -26,11 +26,9 @@
       },
       "directConnectPort": {
         "title": "Direct Connect API Port",
-        "type": "integer",
+        "type": "string",
         "required": true,
         "default": "8001",
-        "minimum": "1054",
-        "maximum": "65535",
         "description": "The Port of Direct Connect API"
       },
       "https": {
