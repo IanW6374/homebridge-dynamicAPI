@@ -26,7 +26,7 @@
       },
       "directConnectApiPort": {
         "title": "Direct Connect API Port",
-        "type": "string",
+        "type": "integer",
         "required": true,
         "default": "8001",
         "description": "The Port of Direct Connect API"
