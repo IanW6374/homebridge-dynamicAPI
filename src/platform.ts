@@ -338,6 +338,8 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       const headers = (this.config.jwt) ? jwtHeader : {'content-type': 'application/json'};
 
       let options = {};
+      
+      this.log.error(`Test:  ${this.config.remoteApiURL} - ${this.config.remoteApiURL.indexOf('https')}`);
 
       if (this.config.remoteApiRejectInvalidCert === false && this.config.remoteApiURL.indexOf('https') === 0) {
         const agent = new https.Agent({
