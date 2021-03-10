@@ -95,7 +95,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
           if (accessory) {
           // the accessory already exists
-            this.log.info(`[Platform Event]:  Restored Device (${device.name}) from ${this.config.remoteName}`);
+            this.log.info(`[Platform Event]:  Restored Device (${device.name}) from ${this.config.remoteApiDisplayName}`);
           
             // Update accessory context
             accessory.context.device = device;
@@ -111,7 +111,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
           } else {
           // the accessory does not yet exist, so we need to create it
-            this.log.info(`[Platfrom Event]:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteName}`);
+            this.log.info(`[Platfrom Event]:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteApiDisplayName}`);
 
             // create a new accessory
             const accessory = new this.api.platformAccessory(device.name, uuid);
@@ -158,8 +158,8 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
   updateDevice(req, res) {
 
     if (this.deviceObjects.length === 0) {
-      this.log.warn(`[Platform Warning]: No devices synchronised from ${this.config.remoteName}`);
-      res.status(404).send(`WARNING: No devices synchronised from ${this.config.remoteName}`);
+      this.log.warn(`[Platform Warning]: No devices synchronised from ${this.config.remoteApiDisplayName}`);
+      res.status(404).send(`WARNING: No devices synchronised from ${this.config.remoteApiDisplayName}`);
     } else {
      
       const accessoryIndex = this.accessories.findIndex(accessory => accessory.context.device.uuid === req.body.uuid);
@@ -201,7 +201,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
     })
       .then(res => {
         if (res.ok) { // res.status >= 200 && res.status < 300
-          this.log.info(`[Platform Info]:  ${this.config.remoteName} JWT Fetch Success: ${res.status}`);
+          this.log.info(`[Platform Info]:  ${this.config.remoteApiDisplayName} JWT Fetch Success: ${res.status}`);
           return res;
         } else {
           throw new Error(`${res.status}`);
@@ -221,7 +221,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           };
         } 
       })
-      .catch(error => this.log.error(`[Platform Error]:  ${this.config.remoteName} JWT Fetch Failure: ${error}`));
+      .catch(error => this.log.error(`[Platform Error]:  ${this.config.remoteApiDisplayName} JWT Fetch Failure: ${error}`));
   }
 
   
@@ -231,7 +231,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
     WebApp.use(express.json());
     const options = {};
     let error = false;
-    const apiIP = this.config.apiIP || this.getIPAddress();
+    const apiIP = this.config.directConnectApiIP || this.getIPAddress();
 
     // Secure API - jwt
     const checkJwt = jwt({
@@ -272,13 +272,13 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       }
 
       if (!error) {
-        https.createServer(options, WebApp).listen(this.config.apiPort, apiIP, () => {
-          this.log.info(`[Platform Info]:  Direct Connect service started at https://${apiIP}:${this.config.apiPort}`);
+        https.createServer(options, WebApp).listen(this.config.directConnectApiPort, apiIP, () => {
+          this.log.info(`[Platform Info]:  Direct Connect service started at https://${apiIP}:${this.config.directConnectApiPort}`);
         });
       } 
     } else {
-      WebApp.listen(this.config.apiPort, apiIP, () => {
-        this.log.info(`[Platform Info]:  Direct Connect service started at http://${apiIP}:${this.config.apiPort}`);
+      WebApp.listen(this.config.directConnectApiPort, apiIP, () => {
+        this.log.info(`[Platform Info]:  Direct Connect service started at http://${apiIP}:${this.config.directConnectApiPort}`);
       });
     }
 
@@ -287,7 +287,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       let getAPI = '';
 
       if (this.deviceObjects.length === 0) {
-        getAPI = `[${this.config.remoteName}]  WARNING:  No devices synchronised`;
+        getAPI = `[${this.config.remoteApiDisplayName}]  WARNING:  No devices synchronised`;
       } else {
         this.accessories.forEach(item => {
           getAPI += `id: ${item.context.device.id} name: ${item.context.device.name} uuid: ${item.context.device.uuid} type: ${item.context.device.type}<br>`;
@@ -296,7 +296,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
       // Create Direct Connect API GET API Route
       WebApp.get( '/', ( req, res ) => {
-        res.send(`[${this.config.remoteName}]  INFO:  Homebridge Direct Connect API Running <br><br>${getAPI}`);
+        res.send(`[${this.config.remoteApiDisplayName}]  INFO:  Homebridge Direct Connect API Running <br><br>${getAPI}`);
       });
     
       // Create Direct Connect API PATCH API Route
@@ -312,7 +312,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           return next();
         } else {
           this.log.debug(`[Platform Error]:  Direct Connect API Service: ${err}`);
-          res.status(err.status).send(`[${this.config.remoteName}]  ERROR:  Direct Connect API Service: ${err}`);
+          res.status(err.status).send(`[${this.config.remoteApiDisplayName}]  ERROR:  Direct Connect API Service: ${err}`);
         }
       });
       return;
@@ -326,21 +326,21 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       await this.getAuthToken(); 
     }
     if (this.apiJWT.status === false && this.config.jwt === true) {
-      this.log.error(`[Platform Error]:  No valid ${this.config.remoteName} JWT to discover devices`);
+      this.log.error(`[Platform Error]:  No valid ${this.config.remoteApiDisplayName} JWT to discover devices`);
 
-      const error = {'errno': `No valid ${this.config.remoteName} JWT to discover devices`};
+      const error = {'errno': `No valid ${this.config.remoteApiDisplayName} JWT to discover devices`};
       return error;
 
     } else {
 
-      const urlScheme = (this.config.https) ? 'http://' : 'https://';
-      const url = (this.config.url.endsWith('/')) ? urlScheme + this.config.url + endpoint : urlScheme + this.config.url + '/' + endpoint;
+      const urlScheme = (this.config.https) ? 'https://' : 'http://';
+      const url = (this.config.remoteApiURL.endsWith('/')) ? urlScheme + this.config.remoteApiURL + endpoint : urlScheme + this.config.remoteApiURL + '/' + endpoint;
       const jwtHeader = {'content-type': 'application/json', 'authorization': `${this.apiJWT.token_type} ${this.apiJWT.access_token}`};
       const headers = (this.config.jwt) ? jwtHeader : {'content-type': 'application/json'};
 
       let options = {};
 
-      if (this.config.rejectInvalidCert === false && url.toLowerCase().includes('https')) {
+      if (this.config.rejectInvalidCert === false && this.config.https === true) {
         const agent = new https.Agent({
           rejectUnauthorized: false,
         });
@@ -374,7 +374,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           return res;
         })
         .catch(error => {
-          this.log.error(`[Platform Error]:  ${this.config.remoteName} ${method} Failure: ${error}`);
+          this.log.error(`[Platform Error]:  ${this.config.remoteApiDisplayName} ${method} Failure: ${error}`);
           return error;
         });
       return response;

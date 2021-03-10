@@ -5,34 +5,33 @@
   "schema": {
     "type": "object",
     "properties": {
-      "remoteName": {
+      "remoteApiDisplayName": {
         "title": "Name",
         "type": "string",
         "default": "Remote API",
-        "format": "uri",
         "description": "The display name of the remote API"
       },
-      "url": {
-        "title": "URL",
+      "remoteApiURL": {
+        "title": "Host",
         "type": "string",
         "required": true,
-        "default": "<host>:<port>/<endpoint>/",
-        "format": "uri",
-        "description": "The host and endpoint of the remote API"
+        "default": "<host>:<port>/<endpoint>/"
       },
-      "apiIP": {
-        "title": "Local API IP Address",
+      "directConnectIP": {
+        "title": "Direct Connect API IP Address",
         "type": "string",
         "default": "",
         "format": "ipv4",
         "description": "Force the IP address used for the Direct Connect API - Leave blank for automatic assignment of IP address"
       },
-      "apiPort": {
-        "title": "Local API Port",
+      "directConnectPort": {
+        "title": "Direct Connect API Port",
         "type": "integer",
         "required": true,
         "default": "8001",
-        "description": "The Port of local API"
+        "minimum": "1054",
+        "maximum": "65535",
+        "description": "The Port of Direct Connect API"
       },
       "https": {
         "title": "Enable HTTPS",
@@ -50,14 +49,14 @@
         "type": "string",
         "required": true,
         "default": "/<certificate path>/<certificate>",
-        "description": "Certificate for HTTPS API Service"
+        "description": "Certificate for HTTPS Direct Connect Service"
       },
       "httpsKeyPath": {
         "title": "HTTPS Private Key",
         "type": "string",
         "required": true,
         "default": "/<private key path>/<private key>",
-        "description": "Private Key for HTTPS API Service"
+        "description": "Private Key for HTTPS Direct Connect Service"
       },
       "jwt": {
         "title": "Enable JSON Web Token (JWT) Secure API",
@@ -70,7 +69,7 @@
         "required": true,
         "default": "https://<JWT API Application>/",
         "format": "uri",
-        "description": "The JWT Audience for the remote / local API"
+        "description": "The JWT Audience for the Direct Connect & Remote APIs"
       },
       "jwtIssuer": {
         "title": "JWT Issuer",
@@ -78,21 +77,21 @@
         "required": true,
         "default": "https://<JWT Issuer>/",
         "format": "uri",
-        "description": "The JWT Issuer for the remote / local API"
+        "description": "The JWT Issuer for the Direct Connect & Remote APIs"
       },
       "jwtClientID": {
         "title": "JWT Client ID",
         "type": "string",
         "required": true,
         "default": "<JWT Client ID>",
-        "description": "The JWT Client ID for the remote / local API"
+        "description": "The JWT Client ID for the Direct Connect & Remote APIs"
       },
       "jwtClientSecret": {
         "title": "JWT Client Secret",
         "type": "string",
         "required": true,
         "default": "<JWT Client Secret>",
-        "description": "The JWT Client Secret for the remote / local API"
+        "description": "The JWT Client Secret for the Direct Connect & Remote APIs"
       }
     }
   },
@@ -104,8 +103,8 @@
     "expandable": false,
     "expanded": true,
     "items": [
-      "remoteName",
-      "url"
+      "remoteApiDisplayName",
+      "remoteApiURL"
       ]
   },
   {
@@ -115,8 +114,8 @@
     "expandable": true,
     "expanded": false,
     "items": [
-      "apiIP",
-      "apiPort"
+      "directConnectApiIP",
+      "directConnectApiPort"
       ]
   },
   {
