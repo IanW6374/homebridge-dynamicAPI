@@ -35,18 +35,19 @@ The configuration of the plugin can be done via the Homebrige GUI or through the
 
 ```
 {
-            "url": "http://<host>:<port>/<endpoint>/",
-            "rejectInvalidCert": false,
-            "apiPort": 8001,
-            "https": false,
-            "httpsCertPath": "/<certificate path>/<certificate>",
-            "httpsKeyPath": "/<private key path>/<private key>",
+            "remoteApiDisplayName": "<display name>",
+            "remoteApiURL": "<http(s)>://<host>:<port>/<endpoint>/",
+            "remoteApiRejectInvalidCert": false,
+            "directConnectApiPort": 8001,
+            "directConnectApiHttps": false,
+            "directConnectApiHttpsCertPath": "/<certificate path>/<certificate>",
+            "directConnectApiHttpsKeyPath": "/<private key path>/<private key>",
             "jwt": false,
             "jwtAudience": "https://<JWT API Application>/",
             "jwtIssuer": "https://<JWT Issuer>/",
             "jwtClientID": "<JWT Client ID>",
             "jwtClientSecret": "<JWT Client Secret>",
-            "platform": "Garage"
+            "platform": "<dynamicAPI>"
         }
 
 ```
