@@ -322,6 +322,9 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
   async remoteAPI (method, endpoint, body) {
 
+    const test = this.validURL(this.config.remoteApiURL);
+    this.log.info(`Valid URL: ${test}`);
+
     if (this.validURL(this.config.remoteApiURL)) {
 
       if (this.config.jwt && (this.apiJWT.valid === false || this.apiJWT.expires <= Date.now() + 60000)) {
