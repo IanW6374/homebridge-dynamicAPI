@@ -96,7 +96,10 @@
         "type": "string",
         "required": true,
         "default": "<JWT Client ID>",
-        "description": "The JWT Client ID for the Direct Connect & Remote APIs"
+        "description": "The JWT Client ID for the Direct Connect & Remote APIs",
+        "condition": {
+          "functionBody": "return model.jwt === true;"
+      }
       },
       "jwtClientSecret": {
         "title": "JWT Client Secret",
