@@ -322,61 +322,66 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
   async remoteAPI (method, endpoint, body) {
 
-    if (this.config.jwt && (this.apiJWT.valid === false || this.apiJWT.expires <= Date.now() + 60000)) {
-      await this.getAuthToken(); 
-    }
-    if (this.apiJWT.status === false && this.config.jwt === true) {
-      this.log.error(`[Platform Error]:  No valid ${this.config.remoteApiDisplayName} JWT to discover devices`);
+    if (this.validURL(this.config.remoteApiURL)) {
 
-      const error = {'errno': `No valid ${this.config.remoteApiDisplayName} JWT to discover devices`};
-      return error;
+      if (this.config.jwt && (this.apiJWT.valid === false || this.apiJWT.expires <= Date.now() + 60000)) {
+        await this.getAuthToken(); 
+      }
+      if (this.apiJWT.status === false && this.config.jwt === true) {
+        this.log.error(`[Platform Error]:  No valid ${this.config.remoteApiDisplayName} JWT to discover devices`);
 
-    } else {
+        const error = {'errno': `No valid ${this.config.remoteApiDisplayName} JWT to discover devices`};
+        return error;
 
-      const url = (this.config.remoteApiURL.endsWith('/')) ? this.config.remoteApiURL + endpoint : this.config.remoteApiURL + '/' + endpoint;
-      const jwtHeader = {'content-type': 'application/json', 'authorization': `${this.apiJWT.token_type} ${this.apiJWT.access_token}`};
-      const headers = (this.config.jwt) ? jwtHeader : {'content-type': 'application/json'};
-
-      let options = {};
-
-      if (this.config.remoteApiRejectInvalidCert === false && this.config.remoteApiURL.indexOf('https') === 0) {
-        const agent = new https.Agent({
-          rejectUnauthorized: false,
-        });
-        options = {
-          method: method,
-          headers: headers,
-          agent,
-        };
       } else {
-        options = {
-          method: method,
-          headers: headers,
-        };
-      }
 
-      if (method === 'POST' || method === 'PATCH') {
-        options['body'] = body;
-      }
+        const url = (this.config.remoteApiURL.endsWith('/')) ? this.config.remoteApiURL + endpoint : this.config.remoteApiURL + '/' + endpoint;
+        const jwtHeader = {'content-type': 'application/json', 'authorization': `${this.apiJWT.token_type} ${this.apiJWT.access_token}`};
+        const headers = (this.config.jwt) ? jwtHeader : {'content-type': 'application/json'};
+
+        let options = {};
+
+        if (this.config.remoteApiRejectInvalidCert === false && this.config.remoteApiURL.indexOf('https') === 0) {
+          const agent = new https.Agent({
+            rejectUnauthorized: false,
+          });
+          options = {
+            method: method,
+            headers: headers,
+            agent,
+          };
+        } else {
+          options = {
+            method: method,
+            headers: headers,
+          };
+        }
+
+        if (method === 'POST' || method === 'PATCH') {
+          options['body'] = body;
+        }
       
-      // send Method request
-      const response = await fetch(url, options)
-        .then(res => {
-          if (res.ok) { // res.status >= 200 && res.status < 300
+        // send Method request
+        const response = await fetch(url, options)
+          .then(res => {
+            if (res.ok) { // res.status >= 200 && res.status < 300
+              return res;
+            } else {
+              throw new Error(`${res.status}`);
+            }
+          })
+          .then(res => res.json())
+          .then(res => {
             return res;
-          } else {
-            throw new Error(`${res.status}`);
-          }
-        })
-        .then(res => res.json())
-        .then(res => {
-          return res;
-        })
-        .catch(error => {
-          this.log.error(`[Platform Error]:  ${this.config.remoteApiDisplayName} ${method} Failure: ${error}`);
-          return error;
-        });
-      return response;
+          })
+          .catch(error => {
+            this.log.error(`[Platform Error]:  ${this.config.remoteApiDisplayName} ${method} Failure: ${error}`);
+            return error;
+          });
+        return response;
+      }
+    } else {
+      this.log.error(`[Platform Error]:  Invalid URL:  ${this.config.remoteApiURL}`);
     }
   }
   
@@ -392,6 +397,16 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       }
     }
     return '0.0.0.0';
+  }
+
+  validURL(str: string) {
+    const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+      '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    return !!pattern.test(str);
   }
 }
   
