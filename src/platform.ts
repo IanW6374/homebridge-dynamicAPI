@@ -384,7 +384,9 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
         return response;
       }
     } else {
-      this.log.error(`[Platform Error]:  Invalid URL:  ${this.config.remoteApiURL}`);
+      this.log.error(`[Platform Error]:  Invalid Remote API URL:  ${this.config.remoteApiURL}`);
+      const error = {'errno': `Invalid Remote API URL:  ${this.config.remoteApiURL}`}; 
+      return error;
     }
   }
   
