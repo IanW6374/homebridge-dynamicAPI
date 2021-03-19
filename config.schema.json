@@ -15,7 +15,7 @@
         "title": "URL",
         "type": "string",
         "required": true,
-        "default": "http(s)://<host>:<port>/<endpoint>/",
+        "default": "https://host:8001/API-Endpoint/",
         "pattern": "^(https?:\\/\\/)((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9]))(:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?(\/[-a-z\\d%_.~+]*)*$",
         "description": "The URL of the Remote API"
       },
@@ -49,14 +49,20 @@
         "type": "string",
         "required": true,
         "default": "/<certificate path>/<certificate>",
-        "description": "Certificate for HTTPS Direct Connect API Service"
+        "description": "Certificate for HTTPS Direct Connect API Service",
+        "condition": {
+          "functionBody": "return model.directConnectApiHttps === true;"
+      }
       },
       "directConnectApiHttpsKeyPath": {
         "title": "HTTPS Private Key",
         "type": "string",
         "required": true,
         "default": "/<private key path>/<private key>",
-        "description": "Private Key for HTTPS Direct Connect API Service"
+        "description": "Private Key for HTTPS Direct Connect API Service",
+        "condition": {
+          "functionBody": "return model.directConnectApiHttps === true;"
+      }
       },
       "jwt": {
         "title": "Enable JSON Web Token (JWT) Secure API",
@@ -67,16 +73,16 @@
         "title": "JWT Audience",
         "type": "string",
         "required": true,
-        "default": "https://<JWT API Application>/",
-        "format": "uri",
+        "default": "https://JWT-API-Application/",
+        "pattern": "^(https?:\\/\\/)((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9]))(:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?(\/[-a-z\\d%_.~+]*)*$",
         "description": "The JWT Audience for the Direct Connect & Remote APIs"
       },
       "jwtIssuer": {
         "title": "JWT Issuer",
         "type": "string",
         "required": true,
-        "default": "https://<JWT Issuer>/",
-        "format": "uri",
+        "default": "https://JWT-Issuer/",
+        "pattern": "^(https?:\\/\\/)((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9]))(:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?(\/[-a-z\\d%_.~+]*)*$",
         "description": "The JWT Issuer for the Direct Connect & Remote APIs"
       },
       "jwtClientID": {
