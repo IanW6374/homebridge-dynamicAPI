@@ -400,7 +400,18 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
     }
     return '0.0.0.0';
   }
+  
+  validURL(str: string) {
+    const pattern = new RegExp(
+      '^(https?:\\/\\/)'+  //scheme
+      '((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|'+  // IPv4
+      '(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9]))'+  // hostname
+      '(:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))'+  // port
+      '?(\\/[-a-z\\d%_.~+]*)*$');  // path
+    return !!pattern.test(str);
+  }
 
+  /**
   validURL(str: string) {
     const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
       '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
@@ -410,6 +421,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
     return !!pattern.test(str);
   }
+  */
 }
   
 
