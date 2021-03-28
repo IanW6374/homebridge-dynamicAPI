@@ -36,15 +36,15 @@ The configuration of the plugin can be done via the Homebrige GUI or through the
 ```
 {
             "remoteApiDisplayName": "<display name>",
-            "remoteApiURL": "<http(s)>://<host>:<port>/<endpoint>/",
+            "remoteApiURL": "https://host:8001/API-Endpoint/",
             "remoteApiRejectInvalidCert": false,
             "directConnectApiPort": 8001,
             "directConnectApiHttps": false,
             "directConnectApiHttpsCertPath": "/<certificate path>/<certificate>",
             "directConnectApiHttpsKeyPath": "/<private key path>/<private key>",
             "jwt": false,
-            "jwtAudience": "https://<JWT API Application>/",
-            "jwtIssuer": "https://<JWT Issuer>/",
+            "jwtAudience": "https://JWT-API-Application/",
+            "jwtIssuer": "https://JWT-Issuer/",
             "jwtClientID": "<JWT Client ID>",
             "jwtClientSecret": "<JWT Client Secret>",
             "platform": "<dynamicAPI>"
