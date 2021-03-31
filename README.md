@@ -1,6 +1,6 @@
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
-[![npm](https://badgen.net/npm/v/homebridge-dynamicAPI/latest?icon=npm&label)](https://www.npmjs.com/package/homebridge-dynamicAPI)
-[![npm](https://badgen.net/npm/dt/homebridge-dynamicAPI?label=downloads)](https://www.npmjs.com/package/homebridge-dynamicAPI)
+[![npm](https://badgen.net/npm/v/homebridge-dynamicapi/latest?icon=npm&label)](https://www.npmjs.com/package/homebridge-dynamicapi)
+[![npm](https://badgen.net/npm/dt/homebridge-dynamicapi?label=downloads)](https://www.npmjs.com/package/homebridge-dynamicapi)
 [![Donate](https://badgen.net/badge/donate/paypal/yellow)](https://paypal.me/IanW6374)
 
 <p align="center">
