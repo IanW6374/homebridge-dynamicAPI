@@ -11,6 +11,10 @@
   "bugs": {
     "url": "https://github.com/IanW6374/homebridge-dynamicAPI/issues"
   },
+  "funding": {
+    "type" : "paypal",
+    "url" : "https://paypal.me/IanW6374"
+  },
   "engines": {
     "node": ">=10.17.0",
     "homebridge": ">0.4.53"
