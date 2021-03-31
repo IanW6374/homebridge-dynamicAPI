@@ -6,10 +6,10 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/IanW69/homebridge-dynamicAPI.git"
+    "url": "git://github.com/IanW6374/homebridge-dynamicAPI.git"
   },
   "bugs": {
-    "url": "https://github.com/IanW69/homebridge-dynamicAPI/issues"
+    "url": "https://github.com/IanW6374/homebridge-dynamicAPI/issues"
   },
   "engines": {
     "node": ">=10.17.0",
