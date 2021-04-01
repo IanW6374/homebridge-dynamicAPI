@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge dynamicAPI",
   "name": "homebridge-dynamicapi",
-  "version": "1.0.13-beta.0",
+  "version": "1.0.13",
   "description": "This is a Homebridge dynamic platform plugin which exposes remote light and garage door accessories through a remote API",
   "license": "Apache-2.0",
   "repository": {
@@ -12,8 +12,8 @@
     "url": "https://github.com/IanW6374/homebridge-dynamicAPI/issues"
   },
   "funding": {
-    "type" : "paypal",
-    "url" : "https://paypal.me/IanW6374"
+    "type": "paypal",
+    "url": "https://paypal.me/IanW6374"
   },
   "engines": {
     "node": ">=10.17.0",
