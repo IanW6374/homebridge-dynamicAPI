@@ -26,18 +26,18 @@
         "description": "Terminate the HTTPS connection if the Remote API presents an invalid certificate"
       },
       "directConnectApiIP": {
-        "title": "Direct Connect API IP Address",
+        "title": "Direct Connect API IPv4 Address",
         "type": "string",
         "default": "",
         "format": "ipv4",
-        "description": "Manual assignment of Direct Connect API IP address - Leave blank for automatic assignment"
+        "description": "The IPv4 address of the Direct Connect API (Leave blank for automatic assignment)"
       },
       "directConnectApiPort": {
         "title": "Direct Connect API Port",
         "type": "integer",
         "required": true,
         "default": "8001",
-        "description": "The Port of Direct Connect API"
+        "description": "The Port of the Direct Connect API"
       },
       "directConnectApiHttps": {
         "title": "Enable HTTPS",
@@ -49,7 +49,7 @@
         "type": "string",
         "required": true,
         "default": "/<certificate path>/<certificate>",
-        "description": "Certificate for HTTPS Direct Connect API Service",
+        "description": "Directory path to the certificate for the HTTPS Direct Connect API Service",
         "condition": {
           "functionBody": "return model.directConnectApiHttps === true;"
       }
@@ -59,7 +59,7 @@
         "type": "string",
         "required": true,
         "default": "/<private key path>/<private key>",
-        "description": "Private Key for HTTPS Direct Connect API Service",
+        "description": "Directory path to the private key for the HTTPS Direct Connect API Service",
         "condition": {
           "functionBody": "return model.directConnectApiHttps === true;"
       }
