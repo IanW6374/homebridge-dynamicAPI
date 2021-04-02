@@ -1,7 +1,7 @@
-[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 [![npm](https://badgen.net/npm/v/homebridge-dynamicapi/latest?icon=npm&label)](https://www.npmjs.com/package/homebridge-dynamicapi)
 [![npm](https://badgen.net/npm/dt/homebridge-dynamicapi?label=downloads)](https://www.npmjs.com/package/homebridge-dynamicapi)
 [![Donate](https://badgen.net/badge/donate/paypal/yellow)](https://paypal.me/IanW6374)
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 
 <p align="center">
 
@@ -30,7 +30,7 @@ This is a Homebridge dynamic platform plugin which exposes remote light and gara
 
 ## Install
 
-The plugin can be installed by running the command:  sudo npm -g homebridge-plugin-garage
+The plugin can be installed by running the command:  sudo npm -g homebridge-dynamicapi
 
 
 ## Configuration
@@ -55,7 +55,7 @@ The configuration of the plugin can be done via the Homebrige GUI or through the
         }
 
 ```
-## PLATFORM API
+## DIRECT CONNECT API
 
 * GET / - Shows all devices registered to Homebridge from this platform
 

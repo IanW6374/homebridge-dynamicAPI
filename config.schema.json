@@ -9,7 +9,7 @@
         "title": "Display Name",
         "type": "string",
         "default": "Remote API",
-        "description": "The display name of the remote API"
+        "description": "The display name of the Remote API"
       },
       "remoteApiURL": {
         "title": "URL",
@@ -30,7 +30,7 @@
         "type": "string",
         "default": "",
         "format": "ipv4",
-        "description": "Force the IP address used for the Direct Connect API - Leave blank for automatic assignment of IP address"
+        "description": "Manual assignment of Direct Connect API IP address - Leave blank for automatic assignment"
       },
       "directConnectApiPort": {
         "title": "Direct Connect API Port",
