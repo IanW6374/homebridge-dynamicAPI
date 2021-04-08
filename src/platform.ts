@@ -372,8 +372,8 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           })
           .then(res => res.json())
           .then(res => {
-            Object.assign(response, res.characteristics);
-            return response;
+            Object.assign(res, res.characteristics);
+            return res;
           })
           .catch(error => {
             this.log.error(`[Platform Error]:  ${this.config.remoteApiDisplayName} ${method} Failure: ${error}`);
