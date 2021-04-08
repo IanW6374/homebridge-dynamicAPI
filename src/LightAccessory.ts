@@ -113,8 +113,8 @@ export class LightAccessory {
 
     const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, '');
     if (!device['errno']) {
-      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name}) [${characteristic}] is ${device[characteristic]}`);
-      callback(null, device[characteristic]);
+      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name}) [${characteristic}] is ${device['characteristics'][characteristic]}`);
+      callback(null, device['characteristics'][characteristic]);
     } else {
       callback(null);
     }
