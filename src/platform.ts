@@ -111,7 +111,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
           } else {
           // the accessory does not yet exist, so we need to create it
-            this.log.info(`[Platfrom Event]:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteApiDisplayName}`);
+            this.log.info(`[Platform Event]:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteApiDisplayName}`);
 
             // create a new accessory
             const accessory = new this.api.platformAccessory(device.name, uuid);
@@ -379,6 +379,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
             this.log.error(`[Platform Error]:  ${this.config.remoteApiDisplayName} ${method} Failure: ${error}`);
             return error;
           });
+        this.log.info(`API Response:  ${response}`);
         return response;
       }
     } else {
