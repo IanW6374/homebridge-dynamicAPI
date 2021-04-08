@@ -379,7 +379,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
             this.log.error(`[Platform Error]:  ${this.config.remoteApiDisplayName} ${method} Failure: ${error}`);
             return error;
           });
-        this.log.info(`API Response:  ${response}`);
+        this.log.info(`API Response:  ${JSON.stringify(response)}`);
         return response;
       }
     } else {
