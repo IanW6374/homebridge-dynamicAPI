@@ -21,7 +21,6 @@ export class LightAccessory {
 
 
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
-    // eslint-disable-next-line max-len
     this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
     
     // set the service name, this is what is displayed as the default name on the Home app

@@ -15,7 +15,6 @@ export class GarageDoorAccessory {
   ) {
 
     // set accessory information
-
     this.friendlyState = {
       true: 'True',
       false: 'False',

@@ -173,11 +173,11 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
         const deviceIndex = this.accessories[accessoryIndex].context.device.id;
 
         if (this.accessories[accessoryIndex].context.device.type === 'Garage Door Opener') {
-          this.deviceObjects[deviceIndex].updateCharacteristic(req.body.stateActual, req.body.stateTarget, req.body.obstruction);
+          this.deviceObjects[deviceIndex].updateCharacteristic(req.body.characteristics.stateActual, req.body.characteristics.stateTarget, req.body.characteristics.obstruction);
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
 
         } else if (this.accessories[accessoryIndex].context.device.type === 'Lightbulb') {
-          this.deviceObjects[deviceIndex].updateCharacteristic(req.body.on, req.body.brightness, req.body.colour);
+          this.deviceObjects[deviceIndex].updateCharacteristic(req.body.characteristics.on, req.body.characteristics.brightness, req.body.characteristics.colour, req.body.characteristics.hue, req.body.characteristics.saturation);
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
       
         } else {
@@ -372,7 +372,6 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           })
           .then(res => res.json())
           .then(res => {
-            Object.assign(res, res.characteristics);
             return res;
           })
           .catch(error => {
