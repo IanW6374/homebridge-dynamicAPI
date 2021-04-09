@@ -46,14 +46,14 @@ export class LightAccessory {
     }
 
     // register handlers for the Hue Characteristic
-    if (accessory.context.device.hue !== undefined) {
+    if (accessory.context.device.characteristics.hue !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.Hue)
         .on('set', this.setCharacteristic.bind(this, 'hue'))       // SET - bind to the 'setHue` method below
         .on('get', this.getCharacteristic.bind(this, 'hue'));      // GET - bind to the 'getHue` method below
     }
 
     // register handlers for the Saturation Characteristic
-    if (accessory.context.device.saturation !== undefined) {
+    if (accessory.context.device.characteristics.saturation !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.Saturation)
         .on('set', this.setCharacteristic.bind(this, 'saturation'))       // SET - bind to the 'setSaturation` method below
         .on('get', this.getCharacteristic.bind(this, 'saturation'));      // GET - bind to the 'getSaturation` method below
