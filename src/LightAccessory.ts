@@ -114,8 +114,8 @@ export class LightAccessory {
     //const charcteristicInfo = `{"${characteristic}"}`;
     const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${characteristic}`, '');
     if (!device['errno']) {
-      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device['characteristics'][characteristic]})`);
-      callback(null, device['characteristics'][characteristic]);
+      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device[characteristic]})`);
+      callback(null, device[characteristic]);
     } else {
       callback(null);
     }
