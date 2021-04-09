@@ -64,7 +64,7 @@ export class GarageDoorAccessory {
             return res;
           });
   
-        this.platform.log.debug(this.accessory.context.device.name, ' Get Characteristic Current Door State ->', AccessoryInfo.stateActual);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Door State) is (${this.friendlyState[actualDoorState]})`);
           
         this.service.updateCharacteristic(this.platform.Characteristic.CurrentDoorState, AccessoryInfo.stateActual);
       }, 30000);
@@ -82,15 +82,15 @@ export class GarageDoorAccessory {
 
     if (obstructionDetected !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.ObstructionDetected, obstructionDetected);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Obstruction Detected] is ${this.friendlyState[obstructionDetected]}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Obstruction Detected) is (${this.friendlyState[obstructionDetected]})`);
     }
     if (actualDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.CurrentDoorState, actualDoorState);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Door State] is ${this.friendlyState[actualDoorState]}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Door State) is (${this.friendlyState[actualDoorState]})`);
     }
     if (targetDoorState !== undefined){
       this.service.updateCharacteristic(this.platform.Characteristic.TargetDoorState, targetDoorState);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Door Target State] is ${this.friendlyState[targetDoorState]}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Door Target State) is (${this.friendlyState[targetDoorState]})`);
     }
   }
 
@@ -115,7 +115,7 @@ export class GarageDoorAccessory {
 
     const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, '');
     if (!device['errno']) {
-      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name}) [${characteristic}] is ${this.friendlyState[device['characteristics'][characteristic]]}`);
+      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${this.friendlyState[device['characteristics'][characteristic]]})`);
       callback(null, device['characteristics'][characteristic]);
     } else {
       callback(null);

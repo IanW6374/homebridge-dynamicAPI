@@ -69,23 +69,23 @@ export class LightAccessory {
   async updateCharacteristic (on, brightness, colour, hue, saturation) {
     
     this.service.updateCharacteristic(this.platform.Characteristic.On, on);
-    this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [On] is ${on}`);
+    this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | On) is (${on})`);
     
     if (this.accessory.context.device.brightness !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.Brightness, brightness);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Brightness] is ${brightness}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Brightness) is (${brightness})`);
     }
     if (this.accessory.context.device.colour !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.ColorTemperature, colour);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Colour] is ${colour}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Colour) is (${colour})`);
     }
     if (this.accessory.context.device.hue !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.Hue, hue);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Hue] is ${hue}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Hue) is (${hue})`);
     }
     if (this.accessory.context.device.saturation !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.Saturation, saturation);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name}) [Saturation] is ${saturation}`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Saturation) is (${saturation})`);
     }
     
   }
@@ -100,7 +100,7 @@ export class LightAccessory {
     const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, accessoryInfo);
 
     if (!device['errno']) {
-      this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name}) [${characteristic}] set to ${value}`);
+      this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name} | ${characteristic}) set to (${value})`);
     }
     callback(null);
   }
@@ -113,7 +113,7 @@ export class LightAccessory {
 
     const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, '');
     if (!device['errno']) {
-      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name}) [${characteristic}] is ${device['characteristics'][characteristic]}`);
+      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device['characteristics'][characteristic]})`);
       callback(null, device['characteristics'][characteristic]);
     } else {
       callback(null);
