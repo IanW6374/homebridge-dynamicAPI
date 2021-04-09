@@ -32,14 +32,14 @@ export class LightAccessory {
       .on('get', this.getCharacteristic.bind(this, 'on'));               // GET - bind to the `getOn` method below
 
     // register handlers for the Brightness Characteristic
-    if (accessory.context.device.brightness !== undefined) {
+    if (accessory.context.device.characteristics.brightness !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.Brightness)
         .on('set', this.setCharacteristic.bind(this, 'brightness'))       // SET - bind to the 'setBrightness` method below
         .on('get', this.getCharacteristic.bind(this, 'brightness'));      // GET - bind to the 'getBrightness` method below
     }
 
     // register handlers for the Colour Characteristic
-    if (accessory.context.device.colour !== undefined) {
+    if (accessory.context.device.characteristics.colour !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
         .on('set', this.setCharacteristic.bind(this, 'colour'))       // SET - bind to the 'setColour` method below
         .on('get', this.getCharacteristic.bind(this, 'colour'));      // GET - bind to the 'getColour` method below

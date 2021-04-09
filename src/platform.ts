@@ -58,7 +58,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       // Discover & register your devices as accessories
       await this.discoverDevices();
 
-      // Start Platform API Server
+      // Start Direct Connect API Service
       this.webServer();
     });
   }
@@ -93,8 +93,9 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           // the cached devices we stored in the `configureAccessory` method above
           const accessory = this.accessories.find(accessory => accessory.UUID === uuid);
 
-          if (accessory) {
           // the accessory already exists
+          if (accessory) {
+          
             this.log.info(`[Platform Event]:  Restored Device (${device.name}) from ${this.config.remoteApiDisplayName}`);
           
             // Update accessory context
@@ -109,9 +110,8 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
               this.log.warn(`[Platform Warning]:  Device Type Not Supported (${device.name} | ${device.type})`);
             }
 
+            // the accessory does not yet exist, so we need to create it
           } else {
-          // the accessory does not yet exist, so we need to create it
-            this.log.info(`[Platform Event]:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteApiDisplayName}`);
 
             // create a new accessory
             const accessory = new this.api.platformAccessory(device.name, uuid);
@@ -133,6 +133,8 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
             // link the accessory to your platform
             this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+
+            this.log.info(`[Platform Event]:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteApiDisplayName}`);
           }
         } 
     
