@@ -350,21 +350,19 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           options = {
             method: method,
             headers: headers,
-            body: body,
             agent,
           };
         } else {
           options = {
             method: method,
             headers: headers,
-            body: body,
           };
         }
-        /*
+        
         if (method === 'POST' || method === 'PATCH') {
           options['body'] = body;
         }
- */     
+      
         // send Method request
         const response = await fetch(url, options)
           .then(res => {
