@@ -96,8 +96,8 @@ export class LightAccessory {
    */
   setCharacteristic (characteristic, value: CharacteristicValue, callback: CharacteristicSetCallback) {
     
-    const accessoryInfo = `{"id": ${this.accessory.context.device.id}, "${characteristic}": ${value}}`;
-    const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, accessoryInfo);
+    //const charcteristicInfo = `{"${characteristic}": ${value}}`;
+    const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, `{"${characteristic}": ${value}}`);
 
     if (!device['errno']) {
       this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name} | ${characteristic}) set to (${value})`);
@@ -111,7 +111,8 @@ export class LightAccessory {
    */
   async getCharacteristic(characteristic, callback: CharacteristicGetCallback) {
 
-    const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, '');
+    //const charcteristicInfo = `{"${characteristic}"}`;
+    const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, `{"${characteristic}"}`);
     if (!device['errno']) {
       this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device['characteristics'][characteristic]})`);
       callback(null, device['characteristics'][characteristic]);

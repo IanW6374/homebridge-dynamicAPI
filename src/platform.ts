@@ -260,7 +260,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
         const cert = fs.readFileSync(`${this.config.directConnectApiHttpsCertPath}`);
         options['cert'] = cert;
       } catch (err) {
-        this.log.error(`[Platform Error]:  Direct Connect HTTPS Certificate file does not exist or unreadable: ${err}`);
+        this.log.error(`[Platform Error]:  Direct Connect API HTTPS Certificate file does not exist or unreadable: ${err}`);
         error = true;
       }
 
@@ -269,18 +269,18 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
         const key = fs.readFileSync(`${this.config.directConnectApiHttpsKeyPath}`);
         options['key'] = key;
       } catch (err) {
-        this.log.error(`[Platform Error]:  Direct Connect HTTPS Private Key file does not exist or unreadable: ${err}`);
+        this.log.error(`[Platform Error]:  Direct Connect API HTTPS Private Key file does not exist or unreadable: ${err}`);
         error = true;
       }
 
       if (!error) {
         https.createServer(options, WebApp).listen(this.config.directConnectApiPort, apiIP, () => {
-          this.log.info(`[Platform Info]:  Direct Connect service started at https://${apiIP}:${this.config.directConnectApiPort}`);
+          this.log.info(`[Platform Info]:  Direct Connect API service started at https://${apiIP}:${this.config.directConnectApiPort}`);
         });
       } 
     } else {
       WebApp.listen(this.config.directConnectApiPort, apiIP, () => {
-        this.log.info(`[Platform Info]:  Direct Connect service started at http://${apiIP}:${this.config.directConnectApiPort}`);
+        this.log.info(`[Platform Info]:  Direct Connect API service started at http://${apiIP}:${this.config.directConnectApiPort}`);
       });
     }
 
