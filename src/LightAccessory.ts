@@ -67,35 +67,49 @@ export class LightAccessory {
   
 
   /**
-   * Handle "SET" requests from Platform API
+   * Handle "SET" requests from Direct Connect API
    * These are sent when the user changes the state of an accessory locally on the device.
    */
   async updateCharacteristic (on, brightness, colour, hue, saturation) {
 
-    if (this.accessory.context.device.on === true || false) {
+    if (on === true || false) {
       this.service.updateCharacteristic(this.platform.Characteristic.On, on);
       this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | On) set to (${on})`);
     } else {
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing mandatory (on) ${on} characteristic`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | On) invalid value (${on})`);
     }
-    
-    if (this.accessory.context.device.brightness !== undefined) {
-      this.service.updateCharacteristic(this.platform.Characteristic.Brightness, brightness);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Brightness) set to (${brightness})`);
-    }   
-    if (this.accessory.context.device.colour !== undefined) {
-      this.service.updateCharacteristic(this.platform.Characteristic.ColorTemperature, colour);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Colour) set to (${colour})`);
+    if (brightness !== undefined) {
+      if (brightness >= 0 && brightness <= 100) {
+        this.service.updateCharacteristic(this.platform.Characteristic.Brightness, brightness);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Brightness) set to (${brightness})`);
+      } else {
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | Brightness) invalid value (${brightness})`);
+      }
     }
-    if (this.accessory.context.device.hue !== undefined) {
-      this.service.updateCharacteristic(this.platform.Characteristic.Hue, hue);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Hue) set to (${hue})`);
+    if (colour !== undefined) {
+      if (colour >= 140 && colour <= 500) {
+        this.service.updateCharacteristic(this.platform.Characteristic.ColorTemperature, colour);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Colour) set to (${colour})`);
+      } else {
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | Colour) invalid value (${colour})`);
+      }
     }
+    if (hue !== undefined) {
+      if (hue >= 0 && hue <= 360) {
+        this.service.updateCharacteristic(this.platform.Characteristic.Hue, hue);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Hue) set to (${hue})`);
+      } else {
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | Hue) invalid value (${hue})`);
+      }
+    } 
     if (this.accessory.context.device.saturation !== undefined) {
-      this.service.updateCharacteristic(this.platform.Characteristic.Saturation, saturation);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Saturation) set to (${saturation})`);
+      if (saturation >= 0 && saturation <= 100) {
+        this.service.updateCharacteristic(this.platform.Characteristic.Saturation, saturation);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Saturation) set to (${saturation})`);
+      } else {
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | Saturation) invalid value (${saturation})`);
+      }
     }
-    
   }
 
 
