@@ -72,7 +72,7 @@ export class LightAccessory {
    */
   async updateCharacteristic (on, brightness, colour, hue, saturation) {
 
-    if (on === true || false) {
+    if (on === true || on === false) {
       this.service.updateCharacteristic(this.platform.Characteristic.On, on);
       this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | On) set to (${on})`);
     } else {
