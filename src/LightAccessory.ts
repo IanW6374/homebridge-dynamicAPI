@@ -27,9 +27,13 @@ export class LightAccessory {
     this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.name);
 
     // register handlers for the On/Off Characteristic
-    this.service.getCharacteristic(this.platform.Characteristic.On)
-      .on('set', this.setCharacteristic.bind(this, 'on'))                // SET - bind to the `setOn` method below
-      .on('get', this.getCharacteristic.bind(this, 'on'));               // GET - bind to the `getOn` method below
+    if (accessory.context.device.characteristics.on !== undefined) {
+      this.service.getCharacteristic(this.platform.Characteristic.On)
+        .on('set', this.setCharacteristic.bind(this, 'on'))                // SET - bind to the `setOn` method below
+        .on('get', this.getCharacteristic.bind(this, 'on'));               // GET - bind to the `getOn` method below
+    } else {
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing mandatory (on) characteristic`);
+    }
 
     // register handlers for the Brightness Characteristic
     if (accessory.context.device.characteristics.brightness !== undefined) {
@@ -67,9 +71,13 @@ export class LightAccessory {
    * These are sent when the user changes the state of an accessory locally on the device.
    */
   async updateCharacteristic (on, brightness, colour, hue, saturation) {
-    
-    this.service.updateCharacteristic(this.platform.Characteristic.On, on);
-    this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | On) is (${on})`);
+
+    if (this.accessory.context.device.on !== undefined) {
+      this.service.updateCharacteristic(this.platform.Characteristic.On, on);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | On) is (${on})`);
+    } else {
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing mandatory (on) characteristic`);
+    }
     
     if (this.accessory.context.device.brightness !== undefined) {
       this.service.updateCharacteristic(this.platform.Characteristic.Brightness, brightness);
