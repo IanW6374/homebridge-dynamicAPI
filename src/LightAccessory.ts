@@ -124,9 +124,10 @@ export class LightAccessory {
 
   async updateCharacteristic1 (req) {
 
-    this.platform.log.info(`Test - ${req}`);
+    const req1 = JSON.parse(req);
+    this.platform.log.info(`Test - ${req1}`);
 
-    req.foreach(char => {
+    req1.foreach(char => {
       if ((this.validCharacteristic[req[char]]['type'] === 'boolean' && typeof req.body[char] === 'boolean') || (this.validCharacteristic[req[char]]['type'] === 'range' && req.body[char] >= this.validCharacteristic[req[char]]['low'] && req.body[char] <= this.validCharacteristic[req[char]]['high'])) {
         this.service.updateCharacteristic(this.platform.Characteristic[req[char]], req.body[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);
@@ -162,7 +163,7 @@ export class LightAccessory {
       callback(null, device[characteristic]);
     } else {
       if (!device['errno']) {
-        this.platform.log.info(`[HomeKit] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${device[characteristic]}  cached value ${this.accessory.context.device.CharacteristicValue[characteristic]})`);
+        this.platform.log.info(`[HomeKit] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${device[characteristic]})`);
       }
       callback(new Error ('Invalid Remote API Response'));
       //callback(null, this.accessory.context.device.CharacteristicValue[characteristic]);
