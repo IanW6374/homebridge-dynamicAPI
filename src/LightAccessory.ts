@@ -128,7 +128,7 @@ export class LightAccessory {
 
     req.foreach(char => {
       if ((this.validCharacteristic[req[char]]['type'] === 'boolean' && typeof req.body[char] === 'boolean') || (this.validCharacteristic[req[char]]['type'] === 'range' && req.body[char] >= this.validCharacteristic[req[char]]['low'] && req.body[char] <= this.validCharacteristic[req[char]]['high'])) {
-        this.service.updateCharacteristic1(this.platform.Characteristic[req[char]], req.body[char]);
+        this.service.updateCharacteristic(this.platform.Characteristic[req[char]], req.body[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);
       } else {
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | ${char}) invalid value (${req[char]})`);
