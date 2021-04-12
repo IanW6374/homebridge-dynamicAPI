@@ -16,11 +16,11 @@ export class LightAccessory {
 
     // Valid accessory values
     this.validCharacteristic = {
-      On: {'type': 'boolean'},
-      Brightness: {'type': 'range', 'low': 0, 'high': 100},
-      ColorTemperature: {'type': 'range', 'low': 140, 'high': 500},
-      Hue: {'type': 'range', 'low': 0, 'high': 360},
-      Saturation: {'type': 'range', 'low': 0, 'high': 100},
+      On: {'type': 'boolean', 'required': true, 'get': true, 'set': true},
+      Brightness: {'type': 'range', 'required': false, 'get': true, 'set': true, 'low': 0, 'high': 100},
+      ColorTemperature: {'type': 'range', 'required': false, 'get': true, 'set': true, 'low': 140, 'high': 500},
+      Hue: {'type': 'range', 'required': false, 'get': true, 'set': true, 'low': 0, 'high': 360},
+      Saturation: {'type': 'range', 'required': false, 'get': true, 'set': true, 'low': 0, 'high': 100},
     };
 
     // set accessory information
@@ -36,14 +36,37 @@ export class LightAccessory {
     // set the service name, this is what is displayed as the default name on the Home app
     this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.name);
 
-    // register handlers for the On/Off Characteristic
-    if (accessory.context.device.characteristics.On !== undefined) {
-      this.service.getCharacteristic(this.platform.Characteristic.On)
-        .on('set', this.setCharacteristic.bind(this, 'On'))                // SET - bind to the `setOn` method below
-        .on('get', this.getCharacteristic.bind(this, 'On'));               // GET - bind to the `getOn` method below
-    } else {
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing mandatory (On) characteristic`);
+    // register handlers for the Characteristics
+
+    for (const char in this.validCharacteristic) {
+      if (accessory.context.device.characteristics[char] !== undefined) {
+        // SET - bind to the `setOn` method below
+        if (this.validCharacteristic.set === true) {
+          this.service.getCharacteristic(this.platform.Characteristic[char]).on('set', this.setCharacteristic.bind(this, [char]));
+        }
+        // GET - bind to the `getOn` method below  
+        if (this.validCharacteristic.get === true) {
+          this.service.getCharacteristic(this.platform.Characteristic[char]).on('get', this.getCharacteristic.bind(this, [char]));
+        }    
+      } else {
+
+        if (this.validCharacteristic.required === true) {
+          this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing required (${char}) characteristic`);
+        }
+      }
     }
+    
+
+
+
+
+
+
+
+
+
+    /*
+    
 
     // register handlers for the Brightness Characteristic
     if (accessory.context.device.characteristics.Brightness !== undefined) {
@@ -52,7 +75,7 @@ export class LightAccessory {
         .on('get', this.getCharacteristic.bind(this, 'Brightness'));      // GET - bind to the 'getBrightness` method below
     }
 
-    // register handlers for the Colour Characteristic
+    // register handlers for the ColorTemperature Characteristic
     if (accessory.context.device.characteristics.ColorTemperature !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
         .on('set', this.setCharacteristic.bind(this, 'ColorTemperature'))       // SET - bind to the 'setColour` method below
@@ -72,6 +95,8 @@ export class LightAccessory {
         .on('set', this.setCharacteristic.bind(this, 'Saturation'))       // SET - bind to the 'setSaturation` method below
         .on('get', this.getCharacteristic.bind(this, 'Saturation'));      // GET - bind to the 'getSaturation` method below
     }
+
+    */
   
   }
   
@@ -81,9 +106,9 @@ export class LightAccessory {
    * These are sent when the user changes the state of an accessory locally on the device.
    */
   async updateCharacteristic1 (req) {
-    // eslint-disable-next-line prefer-const
-    for (let char in req) {
-      this.platform.log.info(`Test - ${char} - ${req[char]}`);
+
+    for (const char in req) {
+      //this.platform.log.info(`Test - ${char} - ${req[char]}`);
       if ((this.validCharacteristic[char]['type'] === 'boolean' && typeof req[char] === 'boolean') || (this.validCharacteristic[char]['type'] === 'range' && req[char] >= this.validCharacteristic[char]['low'] && req[char] <= this.validCharacteristic[char]['high'])) {
         this.service.updateCharacteristic(this.platform.Characteristic[char], req[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);
