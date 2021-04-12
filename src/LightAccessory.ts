@@ -16,7 +16,6 @@ export class LightAccessory {
 
     // Valid accessory values
     this.validCharacteristic = {
-
       On: {'type': 'boolean'},
       Brightness: {'type': 'range', 'low': 0, 'high': 100},
       ColorTemperature: {'type': 'range', 'low': 140, 'high': 500},
@@ -40,91 +39,48 @@ export class LightAccessory {
     // register handlers for the On/Off Characteristic
     if (accessory.context.device.characteristics.On !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.On)
-        .on('set', this.setCharacteristic.bind(this, 'on'))                // SET - bind to the `setOn` method below
-        .on('get', this.getCharacteristic.bind(this, 'on'));               // GET - bind to the `getOn` method below
+        .on('set', this.setCharacteristic.bind(this, 'On'))                // SET - bind to the `setOn` method below
+        .on('get', this.getCharacteristic.bind(this, 'On'));               // GET - bind to the `getOn` method below
     } else {
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing mandatory (on) characteristic`);
+      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing mandatory (On) characteristic`);
     }
 
     // register handlers for the Brightness Characteristic
     if (accessory.context.device.characteristics.Brightness !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.Brightness)
-        .on('set', this.setCharacteristic.bind(this, 'brightness'))       // SET - bind to the 'setBrightness` method below
-        .on('get', this.getCharacteristic.bind(this, 'brightness'));      // GET - bind to the 'getBrightness` method below
+        .on('set', this.setCharacteristic.bind(this, 'Brightness'))       // SET - bind to the 'setBrightness` method below
+        .on('get', this.getCharacteristic.bind(this, 'Brightness'));      // GET - bind to the 'getBrightness` method below
     }
 
     // register handlers for the Colour Characteristic
     if (accessory.context.device.characteristics.ColorTemperature !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
-        .on('set', this.setCharacteristic.bind(this, 'colour'))       // SET - bind to the 'setColour` method below
-        .on('get', this.getCharacteristic.bind(this, 'colour'));      // GET - bind to the 'getColour` method below
+        .on('set', this.setCharacteristic.bind(this, 'ColorTemperature'))       // SET - bind to the 'setColour` method below
+        .on('get', this.getCharacteristic.bind(this, 'ColorTemperature'));      // GET - bind to the 'getColour` method below
     }
 
     // register handlers for the Hue Characteristic
     if (accessory.context.device.characteristics.Hue !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.Hue)
-        .on('set', this.setCharacteristic.bind(this, 'hue'))       // SET - bind to the 'setHue` method below
-        .on('get', this.getCharacteristic.bind(this, 'hue'));      // GET - bind to the 'getHue` method below
+        .on('set', this.setCharacteristic.bind(this, 'Hue'))       // SET - bind to the 'setHue` method below
+        .on('get', this.getCharacteristic.bind(this, 'Hue'));      // GET - bind to the 'getHue` method below
     }
 
     // register handlers for the Saturation Characteristic
     if (accessory.context.device.characteristics.Saturation !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.Saturation)
-        .on('set', this.setCharacteristic.bind(this, 'saturation'))       // SET - bind to the 'setSaturation` method below
-        .on('get', this.getCharacteristic.bind(this, 'saturation'));      // GET - bind to the 'getSaturation` method below
+        .on('set', this.setCharacteristic.bind(this, 'Saturation'))       // SET - bind to the 'setSaturation` method below
+        .on('get', this.getCharacteristic.bind(this, 'Saturation'));      // GET - bind to the 'getSaturation` method below
     }
   
   }
   
+
   /**
    * Handle "SET" requests from Direct Connect API
    * These are sent when the user changes the state of an accessory locally on the device.
    */
-  async updateCharacteristic (on, brightness, colour, hue, saturation) {
-
-    if (on === true || on === false) {
-      this.service.updateCharacteristic(this.platform.Characteristic.On, on);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | On) set to (${on})`);
-    } else {
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | On) invalid value (${on})`);
-    }
-    if (brightness !== undefined) {
-      if (brightness >= 0 && brightness <= 100) {
-        this.service.updateCharacteristic(this.platform.Characteristic.Brightness, brightness);
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Brightness) set to (${brightness})`);
-      } else {
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | Brightness) invalid value (${brightness})`);
-      }
-    }
-    if (colour !== undefined) {
-      if (colour >= 140 && colour <= 500) {
-        this.service.updateCharacteristic(this.platform.Characteristic.ColorTemperature, colour);
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Colour) set to (${colour})`);
-      } else {
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | Colour) invalid value (${colour})`);
-      }
-    }
-    if (hue !== undefined) {
-      if (hue >= 0 && hue <= 360) {
-        this.service.updateCharacteristic(this.platform.Characteristic.Hue, hue);
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Hue) set to (${hue})`);
-      } else {
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | Hue) invalid value (${hue})`);
-      }
-    } 
-    if (saturation !== undefined) {
-      if (saturation >= 0 && saturation <= 100) {
-        this.service.updateCharacteristic(this.platform.Characteristic.Saturation, saturation);
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Saturation) set to (${saturation})`);
-      } else {
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | Saturation) invalid value (${saturation})`);
-      }
-    }
-  }
-
   async updateCharacteristic1 (req) {
-
-    //this.platform.log.info(`Test - ${JSON.stringify(req)}`);
     // eslint-disable-next-line prefer-const
     for (let char in req) {
       this.platform.log.info(`Test - ${char} - ${req[char]}`);
