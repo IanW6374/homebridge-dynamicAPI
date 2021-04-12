@@ -8,6 +8,7 @@ import { dynamicAPIPlatform } from './platform';
 export class LightAccessory {
   private service: Service
   private validCharacteristic
+  private vc
 
   constructor(
     private readonly platform: dynamicAPIPlatform,
@@ -22,6 +23,14 @@ export class LightAccessory {
       colour: {'type': 'range', 'low': 140, 'high': 500},
       hue: {'type': 'range', 'low': 0, 'high': 360},
       saturation: {'type': 'range', 'low': 0, 'high': 100},
+    };
+
+    this.vc = {
+      on: 'On',
+      brightness: 'Brightness',
+      colour: 'ColorTemperature',
+      hue: 'Hue',
+      saturation: 'Saturation',
     };
 
     // set accessory information
@@ -124,12 +133,12 @@ export class LightAccessory {
 
   async updateCharacteristic1 (req) {
 
-    this.platform.log.info(`Test - ${JSON.stringify(req)}`);
+    //this.platform.log.info(`Test - ${JSON.stringify(req)}`);
     // eslint-disable-next-line prefer-const
     for (let char in req) {
-      this.platform.log.info(`Test - ${char} - ${req[char]}`);
+      this.platform.log.info(`Test - ${char} - ${req[char]} - ${this.vc[char]}`);
       if ((this.validCharacteristic[char]['type'] === 'boolean' && typeof req[char] === 'boolean') || (this.validCharacteristic[char]['type'] === 'range' && req[char] >= this.validCharacteristic[char]['low'] && req[char] <= this.validCharacteristic[char]['high'])) {
-        this.service.updateCharacteristic(this.platform.Characteristic.On, req[char]);
+        this.service.updateCharacteristic(this.platform.Characteristic[this.vc[char]], req[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);
       } else {
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | ${char}) invalid value (${req[char]})`);
