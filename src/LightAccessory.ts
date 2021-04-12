@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback, Characteristic } from 'homebridge';
 import { dynamicAPIPlatform } from './platform';
 
 /**
@@ -167,7 +167,7 @@ export class LightAccessory {
       if (!device['errno']) {
         this.platform.log.info(`[HomeKit] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${device[characteristic]})`);
       }
-      callback(null, -70410);
+      callback(new Error ('Invalid Remote API Response'));
     }
   }
 }
