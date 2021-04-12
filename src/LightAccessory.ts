@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback, Characteristic } from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback, Characteristic} from 'homebridge';
 import { dynamicAPIPlatform } from './platform';
 
 /**
@@ -142,7 +142,6 @@ export class LightAccessory {
    */
   setCharacteristic (characteristic, value: CharacteristicValue, callback: CharacteristicSetCallback) {
     
-    //const charcteristicInfo = `{"${characteristic}": ${value}}`;
     const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, `{"${characteristic}": ${value}}`);
 
     if (!device['errno']) {
@@ -157,17 +156,16 @@ export class LightAccessory {
    */
   async getCharacteristic(characteristic, callback: CharacteristicGetCallback) {
 
-    this.platform.log.info(`Test - ${characteristic} - ${this.validCharacteristic[characteristic]['type']}`);
-
     const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${characteristic}`, '');
     if (!device['errno'] && ((this.validCharacteristic[characteristic]['type'] === 'boolean' && typeof device[characteristic] === 'boolean') || (this.validCharacteristic[characteristic]['type'] === 'range' && device[characteristic] >= this.validCharacteristic[characteristic]['low'] && device[characteristic] <= this.validCharacteristic[characteristic]['high']))) {
       this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device[characteristic]})`);
       callback(null, device[characteristic]);
     } else {
       if (!device['errno']) {
-        this.platform.log.info(`[HomeKit] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${device[characteristic]})`);
+        this.platform.log.info(`[HomeKit] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${device[characteristic]}  cached value ${this.accessory.context.device.CharacteristicValue[characteristic]})`);
       }
       callback(new Error ('Invalid Remote API Response'));
+      //callback(null, this.accessory.context.device.CharacteristicValue[characteristic]);
     }
   }
 }
