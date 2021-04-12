@@ -7,11 +7,22 @@ import { dynamicAPIPlatform } from './platform';
  */
 export class LightAccessory {
   private service: Service
+  private validCharacteristic
 
   constructor(
     private readonly platform: dynamicAPIPlatform,
     private readonly accessory: PlatformAccessory,
   ) {
+
+    // Valid accessory values
+    this.validCharacteristic = [
+
+      {on: {'type': 'boolean'}},
+      {brightness: {'type': 'range', 'low': 0, 'high': 100}},
+      {colour: {'type': 'range', 'low': 140, 'high': 500}},
+      {hue: {'type': 'range', 'low': 0, 'high': 360}},
+      {saturation: {'type': 'range', 'low': 0, 'high': 100}},
+    ];
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -65,7 +76,6 @@ export class LightAccessory {
   
   }
   
-
   /**
    * Handle "SET" requests from Direct Connect API
    * These are sent when the user changes the state of an accessory locally on the device.
@@ -102,7 +112,7 @@ export class LightAccessory {
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | Hue) invalid value (${hue})`);
       }
     } 
-    if (this.accessory.context.device.saturation !== undefined) {
+    if (saturation !== undefined) {
       if (saturation >= 0 && saturation <= 100) {
         this.service.updateCharacteristic(this.platform.Characteristic.Saturation, saturation);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Saturation) set to (${saturation})`);
@@ -112,7 +122,19 @@ export class LightAccessory {
     }
   }
 
+  async updateCharacteristic1 (req) {
 
+    req.body.foreach(char => {
+      if ((this.validCharacteristic[req.body[char]]['type'] === 'boolean' && typeof req.body[char] === 'boolean') || (this.validCharacteristic[req.body[char]]['type'] === 'range' && this.validCharacteristic[req.body[char]]['low'] >= req.body[char] && this.validCharacteristic[req.body[char]]['high'] <= req.body[char])) {
+        this.service.updateCharacteristic(this.platform.Characteristic[req.body[char]], req.body[char]);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | On) set to (${req.body[char]})`);
+      } else {
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | On) invalid value (${req.body[char]})`);
+      }
+    });
+  }
+
+    
   /**
    * Handle "SET" characteristics requests from HomeKit
    */
@@ -133,12 +155,14 @@ export class LightAccessory {
    */
   async getCharacteristic(characteristic, callback: CharacteristicGetCallback) {
 
-    //const charcteristicInfo = `{"${characteristic}"}`;
     const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${characteristic}`, '');
-    if (!device['errno']) {
+    if (!device['errno'] && ((this.validCharacteristic[characteristic]['type'] === 'boolean' && typeof device[characteristic] === 'boolean') || (this.validCharacteristic[characteristic]['type'] === 'range' && this.validCharacteristic[characteristic]['low'] >= device[characteristic] && this.validCharacteristic[characteristic]['high'] <= device[characteristic]))) {
       this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device[characteristic]})`);
       callback(null, device[characteristic]);
     } else {
+      if (!device['errno']) {
+        this.platform.log.info(`[HomeKit] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${device[characteristic]})`);
+      }
       callback(null);
     }
   }

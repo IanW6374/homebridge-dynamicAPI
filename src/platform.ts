@@ -179,7 +179,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
 
         } else if (this.accessories[accessoryIndex].context.device.type === 'Lightbulb') {
-          this.deviceObjects[deviceIndex].updateCharacteristic(req.body.characteristics.on, req.body.characteristics.brightness, req.body.characteristics.colour, req.body.characteristics.hue, req.body.characteristics.saturation);
+          this.deviceObjects[deviceIndex].updateCharacteristic1(req.body.characteristics.on, req.body.characteristics.brightness, req.body.characteristics.colour, req.body.characteristics.hue, req.body.characteristics.saturation);
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
       
         } else {
