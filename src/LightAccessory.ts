@@ -124,12 +124,12 @@ export class LightAccessory {
 
   async updateCharacteristic1 (req) {
 
-    req.body.foreach(char => {
-      if ((this.validCharacteristic[req.body[char]]['type'] === 'boolean' && typeof req.body[char] === 'boolean') || (this.validCharacteristic[req.body[char]]['type'] === 'range' && this.validCharacteristic[req.body[char]]['low'] >= req.body[char] && this.validCharacteristic[req.body[char]]['high'] <= req.body[char])) {
-        this.service.updateCharacteristic(this.platform.Characteristic[req.body[char]], req.body[char]);
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | On) set to (${req.body[char]})`);
+    req.foreach(char => {
+      if ((this.validCharacteristic[req[char]]['type'] === 'boolean' && typeof req.body[char] === 'boolean') || (this.validCharacteristic[req[char]]['type'] === 'range' && this.validCharacteristic[req[char]]['low'] >= req.body[char] && this.validCharacteristic[req[char]]['high'] <= req.body[char])) {
+        this.service.updateCharacteristic(this.platform.Characteristic[req[char]], req.body[char]);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);
       } else {
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | On) invalid value (${req.body[char]})`);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | ${char}) invalid value (${req[char]})`);
       }
     });
   }
