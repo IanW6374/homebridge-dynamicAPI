@@ -186,7 +186,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           //Object.keys(user).forEach(prop => {characteristic[prop] = req.body[prop]});
           
           Object.assign(ch, req.body.characteristics);
-          this.log.info(`Testing - ${JSON.stringify(ch)} - ${ch['on']}`);
+          //this.log.info(`Testing - ${JSON.stringify(ch)} - ${ch['on']}`);
           this.deviceObjects[deviceIndex].updateCharacteristic1(ch);
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
       
