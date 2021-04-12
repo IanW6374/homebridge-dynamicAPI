@@ -8,7 +8,6 @@ import { dynamicAPIPlatform } from './platform';
 export class LightAccessory {
   private service: Service
   private validCharacteristic
-  private vc
 
   constructor(
     private readonly platform: dynamicAPIPlatform,
@@ -18,19 +17,11 @@ export class LightAccessory {
     // Valid accessory values
     this.validCharacteristic = {
 
-      on: {'type': 'boolean'},
-      brightness: {'type': 'range', 'low': 0, 'high': 100},
-      colour: {'type': 'range', 'low': 140, 'high': 500},
-      hue: {'type': 'range', 'low': 0, 'high': 360},
-      saturation: {'type': 'range', 'low': 0, 'high': 100},
-    };
-
-    this.vc = {
-      on: 'On',
-      brightness: 'Brightness',
-      colour: 'ColorTemperature',
-      hue: 'Hue',
-      saturation: 'Saturation',
+      On: {'type': 'boolean'},
+      Brightness: {'type': 'range', 'low': 0, 'high': 100},
+      ColorTemperature: {'type': 'range', 'low': 140, 'high': 500},
+      Hue: {'type': 'range', 'low': 0, 'high': 360},
+      Saturation: {'type': 'range', 'low': 0, 'high': 100},
     };
 
     // set accessory information
@@ -47,7 +38,7 @@ export class LightAccessory {
     this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.name);
 
     // register handlers for the On/Off Characteristic
-    if (accessory.context.device.characteristics.on !== undefined) {
+    if (accessory.context.device.characteristics.On !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.On)
         .on('set', this.setCharacteristic.bind(this, 'on'))                // SET - bind to the `setOn` method below
         .on('get', this.getCharacteristic.bind(this, 'on'));               // GET - bind to the `getOn` method below
@@ -56,28 +47,28 @@ export class LightAccessory {
     }
 
     // register handlers for the Brightness Characteristic
-    if (accessory.context.device.characteristics.brightness !== undefined) {
+    if (accessory.context.device.characteristics.Brightness !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.Brightness)
         .on('set', this.setCharacteristic.bind(this, 'brightness'))       // SET - bind to the 'setBrightness` method below
         .on('get', this.getCharacteristic.bind(this, 'brightness'));      // GET - bind to the 'getBrightness` method below
     }
 
     // register handlers for the Colour Characteristic
-    if (accessory.context.device.characteristics.colour !== undefined) {
+    if (accessory.context.device.characteristics.ColorTemperature !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
         .on('set', this.setCharacteristic.bind(this, 'colour'))       // SET - bind to the 'setColour` method below
         .on('get', this.getCharacteristic.bind(this, 'colour'));      // GET - bind to the 'getColour` method below
     }
 
     // register handlers for the Hue Characteristic
-    if (accessory.context.device.characteristics.hue !== undefined) {
+    if (accessory.context.device.characteristics.Hue !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.Hue)
         .on('set', this.setCharacteristic.bind(this, 'hue'))       // SET - bind to the 'setHue` method below
         .on('get', this.getCharacteristic.bind(this, 'hue'));      // GET - bind to the 'getHue` method below
     }
 
     // register handlers for the Saturation Characteristic
-    if (accessory.context.device.characteristics.saturation !== undefined) {
+    if (accessory.context.device.characteristics.Saturation !== undefined) {
       this.service.getCharacteristic(this.platform.Characteristic.Saturation)
         .on('set', this.setCharacteristic.bind(this, 'saturation'))       // SET - bind to the 'setSaturation` method below
         .on('get', this.getCharacteristic.bind(this, 'saturation'));      // GET - bind to the 'getSaturation` method below
@@ -136,7 +127,7 @@ export class LightAccessory {
     //this.platform.log.info(`Test - ${JSON.stringify(req)}`);
     // eslint-disable-next-line prefer-const
     for (let char in req) {
-      this.platform.log.info(`Test - ${char} - ${req[char]} - ${this.vc[char]}`);
+      this.platform.log.info(`Test - ${char} - ${req[char]}`);
       if ((this.validCharacteristic[char]['type'] === 'boolean' && typeof req[char] === 'boolean') || (this.validCharacteristic[char]['type'] === 'range' && req[char] >= this.validCharacteristic[char]['low'] && req[char] <= this.validCharacteristic[char]['high'])) {
         this.service.updateCharacteristic(this.platform.Characteristic[char], req[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);
