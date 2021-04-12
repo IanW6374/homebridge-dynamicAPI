@@ -124,10 +124,10 @@ export class LightAccessory {
 
   async updateCharacteristic1 (req) {
 
-    const req1 = JSON.parse(req);
-    this.platform.log.info(`Test - ${req1}`);
+    //const req1 = JSON.parse(req);
+    this.platform.log.info(`Test - ${req}`);
 
-    req1.foreach(char => {
+    req.foreach(char => {
       if ((this.validCharacteristic[req[char]]['type'] === 'boolean' && typeof req.body[char] === 'boolean') || (this.validCharacteristic[req[char]]['type'] === 'range' && req.body[char] >= this.validCharacteristic[req[char]]['low'] && req.body[char] <= this.validCharacteristic[req[char]]['high'])) {
         this.service.updateCharacteristic(this.platform.Characteristic[req[char]], req.body[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);

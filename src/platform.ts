@@ -182,6 +182,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           //this.deviceObjects[deviceIndex].updateCharacteristic(req.body.characteristics.on, req.body.characteristics.brightness, req.body.characteristics.colour, req.body.characteristics.hue, req.body.characteristics.saturation);
           const characteristic = {};
           Object.assign(characteristic, req.body.characteristics);
+          this.log.info(`Testing - ${characteristic}`);
           this.deviceObjects[deviceIndex].updateCharacteristic1(characteristic);
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
       
