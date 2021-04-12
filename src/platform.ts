@@ -180,10 +180,14 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
         } else if (this.accessories[accessoryIndex].context.device.type === 'Lightbulb') {
           //this.deviceObjects[deviceIndex].updateCharacteristic(req.body.characteristics.on, req.body.characteristics.brightness, req.body.characteristics.colour, req.body.characteristics.hue, req.body.characteristics.saturation);
-          const characteristic = {};
-          Object.assign(characteristic, req.body.characteristics);
-          this.log.info(`Testing - ${JSON.stringify(characteristic)}`);
-          this.deviceObjects[deviceIndex].updateCharacteristic1(characteristic);
+          const ch = {};
+
+    
+          //Object.keys(user).forEach(prop => {characteristic[prop] = req.body[prop]});
+          
+          Object.assign(ch, req.body.characteristics);
+          this.log.info(`Testing - ${JSON.stringify(ch)} - ${ch['on']}`);
+          this.deviceObjects[deviceIndex].updateCharacteristic1(ch);
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
       
         } else {
