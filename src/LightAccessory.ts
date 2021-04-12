@@ -124,8 +124,10 @@ export class LightAccessory {
 
   async updateCharacteristic1 (req) {
 
+    this.platform.log.info(`Test - ${req}`);
+
     req.foreach(char => {
-      if ((this.validCharacteristic[req[char]]['type'] === 'boolean' && typeof req.body[char] === 'boolean') || (this.validCharacteristic[req[char]]['type'] === 'range' && this.validCharacteristic[req[char]]['low'] >= req.body[char] && this.validCharacteristic[req[char]]['high'] <= req.body[char])) {
+      if ((this.validCharacteristic[req[char]]['type'] === 'boolean' && typeof req.body[char] === 'boolean') || (this.validCharacteristic[req[char]]['type'] === 'range' && req.body[char] >= this.validCharacteristic[req[char]]['low'] && req.body[char] <= this.validCharacteristic[req[char]]['high'])) {
         this.service.updateCharacteristic(this.platform.Characteristic[req[char]], req.body[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);
       } else {
@@ -158,7 +160,7 @@ export class LightAccessory {
     this.platform.log.info(`Test - ${characteristic} - ${this.validCharacteristic[characteristic]['type']}`);
 
     const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${characteristic}`, '');
-    if (!device['errno'] && ((this.validCharacteristic[characteristic]['type'] === 'boolean' && typeof device[characteristic] === 'boolean') || (this.validCharacteristic[characteristic]['type'] === 'range' && this.validCharacteristic[characteristic]['low'] >= device[characteristic] && this.validCharacteristic[characteristic]['high'] <= device[characteristic]))) {
+    if (!device['errno'] && ((this.validCharacteristic[characteristic]['type'] === 'boolean' && typeof device[characteristic] === 'boolean') || (this.validCharacteristic[characteristic]['type'] === 'range' && device[characteristic] >= this.validCharacteristic[characteristic]['low'] && device[characteristic] <= this.validCharacteristic[characteristic]['high']))) {
       this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device[characteristic]})`);
       callback(null, device[characteristic]);
     } else {
