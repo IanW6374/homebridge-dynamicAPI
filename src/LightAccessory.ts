@@ -41,16 +41,18 @@ export class LightAccessory {
     for (const char in this.validCharacteristic) {
       if (accessory.context.device.characteristics[char] !== undefined) {
         // SET - bind to the `setOn` method below
-        if (this.validCharacteristic.set === true) {
-          this.service.getCharacteristic(this.platform.Characteristic[char]).on('set', this.setCharacteristic.bind(this, [char]));
+        if (this.validCharacteristic[char].set === true) {
+          this.service.getCharacteristic(this.platform.Characteristic[char])
+            .on('set', this.setCharacteristic.bind(this, [char]));
         }
         // GET - bind to the `getOn` method below  
-        if (this.validCharacteristic.get === true) {
-          this.service.getCharacteristic(this.platform.Characteristic[char]).on('get', this.getCharacteristic.bind(this, [char]));
+        if (this.validCharacteristic[char].get === true) {
+          this.service.getCharacteristic(this.platform.Characteristic[char])
+            .on('get', this.getCharacteristic.bind(this, [char]));
         }    
       } else {
 
-        if (this.validCharacteristic.required === true) {
+        if (this.validCharacteristic[char].required === true) {
           this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing required (${char}) characteristic`);
         }
       }
