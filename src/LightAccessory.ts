@@ -127,14 +127,15 @@ export class LightAccessory {
     //const req1 = JSON.parse(req);
     this.platform.log.info(`Test - ${req}`);
 
-    req.foreach(char => {
-      if ((this.validCharacteristic[req[char]]['type'] === 'boolean' && typeof req.body[char] === 'boolean') || (this.validCharacteristic[req[char]]['type'] === 'range' && req.body[char] >= this.validCharacteristic[req[char]]['low'] && req.body[char] <= this.validCharacteristic[req[char]]['high'])) {
+    for (const char in req) {
+      this.platform.log.info(`Test - ${char}`);
+      if ((this.validCharacteristic[char]['type'] === 'boolean' && typeof req[char] === 'boolean') || (this.validCharacteristic[char]['type'] === 'range' && req[char] >= this.validCharacteristic[char]['low'] && req[char] <= this.validCharacteristic[char]['high'])) {
         this.service.updateCharacteristic(this.platform.Characteristic[req[char]], req.body[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);
       } else {
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | ${char}) invalid value (${req[char]})`);
       }
-    });
+    }
   }
 
     
