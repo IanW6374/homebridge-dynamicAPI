@@ -155,6 +155,8 @@ export class LightAccessory {
    */
   async getCharacteristic(characteristic, callback: CharacteristicGetCallback) {
 
+    this.platform.log.info(`Test - ${characteristic} - ${this.validCharacteristic[characteristic]['type']}`);
+
     const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${characteristic}`, '');
     if (!device['errno'] && ((this.validCharacteristic[characteristic]['type'] === 'boolean' && typeof device[characteristic] === 'boolean') || (this.validCharacteristic[characteristic]['type'] === 'range' && this.validCharacteristic[characteristic]['low'] >= device[characteristic] && this.validCharacteristic[characteristic]['high'] <= device[characteristic]))) {
       this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device[characteristic]})`);
