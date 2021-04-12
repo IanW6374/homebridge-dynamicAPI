@@ -129,7 +129,7 @@ export class LightAccessory {
     for (let char in req) {
       this.platform.log.info(`Test - ${char} - ${req[char]}`);
       if ((this.validCharacteristic[char]['type'] === 'boolean' && typeof req[char] === 'boolean') || (this.validCharacteristic[char]['type'] === 'range' && req[char] >= this.validCharacteristic[char]['low'] && req[char] <= this.validCharacteristic[char]['high'])) {
-        this.service.updateCharacteristic(this.platform.Characteristic[char], req[char]);
+        this.service.updateCharacteristic(this.platform.Characteristic.On, req[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);
       } else {
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | ${char}) invalid value (${req[char]})`);
