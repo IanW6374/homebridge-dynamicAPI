@@ -15,14 +15,14 @@ export class LightAccessory {
   ) {
 
     // Valid accessory values
-    this.validCharacteristic = [
+    this.validCharacteristic = {
 
-      {on: {'type': 'boolean'}},
-      {brightness: {'type': 'range', 'low': 0, 'high': 100}},
-      {colour: {'type': 'range', 'low': 140, 'high': 500}},
-      {hue: {'type': 'range', 'low': 0, 'high': 360}},
-      {saturation: {'type': 'range', 'low': 0, 'high': 100}},
-    ];
+      on: {'type': 'boolean'},
+      brightness: {'type': 'range', 'low': 0, 'high': 100},
+      colour: {'type': 'range', 'low': 140, 'high': 500},
+      hue: {'type': 'range', 'low': 0, 'high': 360},
+      saturation: {'type': 'range', 'low': 0, 'high': 100},
+    };
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
