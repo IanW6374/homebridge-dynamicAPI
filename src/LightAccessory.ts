@@ -102,7 +102,9 @@ export class LightAccessory {
       if (!device['errno']) {
         this.platform.log.info(`[HomeKit] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${device[characteristic]})`);
       }
-      callback(new Error ('Invalid Remote API Response'));
+      
+      this.platform.log.info(`Testing:  ${this.service.getCharacteristic}`);
+      callback(new Error('Invalid Value'));
     }
   }
 
