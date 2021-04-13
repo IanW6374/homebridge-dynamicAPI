@@ -103,7 +103,7 @@ export class LightAccessory {
         this.platform.log.info(`[HomeKit] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${device[characteristic]})`);
       }
       
-      this.platform.log.info(`Testing:  ${this.service.getCharacteristic}`);
+      this.platform.log.info(`Testing:  ${this.service.getCharacteristic('Hue')}`);
       callback(new Error('Invalid Value'));
     }
   }
