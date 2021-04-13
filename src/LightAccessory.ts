@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback, Characteristic} from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback} from 'homebridge';
 import { dynamicAPIPlatform } from './platform';
 
 /**
@@ -7,7 +7,7 @@ import { dynamicAPIPlatform } from './platform';
  */
 export class LightAccessory {
   private service: Service
-  private validCharacteristic
+  private characteristicSet
 
   constructor(
     private readonly platform: dynamicAPIPlatform,
@@ -15,7 +15,7 @@ export class LightAccessory {
   ) {
 
     // Valid accessory values
-    this.validCharacteristic = {
+    this.characteristicSet = {
       On: {'type': 'boolean', 'required': true, 'get': true, 'set': true},
       Brightness: {'type': 'range', 'required': false, 'get': true, 'set': true, 'low': 0, 'high': 100},
       ColorTemperature: {'type': 'range', 'required': false, 'get': true, 'set': true, 'low': 140, 'high': 500},
@@ -37,69 +37,25 @@ export class LightAccessory {
     this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.name);
 
     // register handlers for the Characteristics
+    for (const characteristic in this.characteristicSet) {
 
-    for (const char in this.validCharacteristic) {
-      if (accessory.context.device.characteristics[char] !== undefined) {
+      if (accessory.context.device.characteristics[characteristic] !== undefined) {
         // SET - bind to the `setOn` method below
-        if (this.validCharacteristic[char].set === true) {
-          this.service.getCharacteristic(this.platform.Characteristic[char])
-            .on('set', this.setCharacteristic.bind(this, [char]));
+        if (this.characteristicSet[characteristic].set === true) {
+          this.service.getCharacteristic(this.platform.Characteristic[characteristic])
+            .on('set', this.setCharacteristic.bind(this, [characteristic]));
         }
         // GET - bind to the `getOn` method below  
-        if (this.validCharacteristic[char].get === true) {
-          this.service.getCharacteristic(this.platform.Characteristic[char])
-            .on('get', this.getCharacteristic.bind(this, [char]));
+        if (this.characteristicSet[characteristic].get === true) {
+          this.service.getCharacteristic(this.platform.Characteristic[characteristic])
+            .on('get', this.getCharacteristic.bind(this, [characteristic]));
         }    
       } else {
-
-        if (this.validCharacteristic[char].required === true) {
-          this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing required (${char}) characteristic`);
+        if (this.characteristicSet[characteristic].required === true) {
+          this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing required (${characteristic}) characteristic`);
         }
       }
     }
-    
-
-
-
-
-
-
-
-
-
-    /*
-    
-
-    // register handlers for the Brightness Characteristic
-    if (accessory.context.device.characteristics.Brightness !== undefined) {
-      this.service.getCharacteristic(this.platform.Characteristic.Brightness)
-        .on('set', this.setCharacteristic.bind(this, 'Brightness'))       // SET - bind to the 'setBrightness` method below
-        .on('get', this.getCharacteristic.bind(this, 'Brightness'));      // GET - bind to the 'getBrightness` method below
-    }
-
-    // register handlers for the ColorTemperature Characteristic
-    if (accessory.context.device.characteristics.ColorTemperature !== undefined) {
-      this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
-        .on('set', this.setCharacteristic.bind(this, 'ColorTemperature'))       // SET - bind to the 'setColour` method below
-        .on('get', this.getCharacteristic.bind(this, 'ColorTemperature'));      // GET - bind to the 'getColour` method below
-    }
-
-    // register handlers for the Hue Characteristic
-    if (accessory.context.device.characteristics.Hue !== undefined) {
-      this.service.getCharacteristic(this.platform.Characteristic.Hue)
-        .on('set', this.setCharacteristic.bind(this, 'Hue'))       // SET - bind to the 'setHue` method below
-        .on('get', this.getCharacteristic.bind(this, 'Hue'));      // GET - bind to the 'getHue` method below
-    }
-
-    // register handlers for the Saturation Characteristic
-    if (accessory.context.device.characteristics.Saturation !== undefined) {
-      this.service.getCharacteristic(this.platform.Characteristic.Saturation)
-        .on('set', this.setCharacteristic.bind(this, 'Saturation'))       // SET - bind to the 'setSaturation` method below
-        .on('get', this.getCharacteristic.bind(this, 'Saturation'));      // GET - bind to the 'getSaturation` method below
-    }
-
-    */
-  
   }
   
 
@@ -107,15 +63,14 @@ export class LightAccessory {
    * Handle "SET" requests from Direct Connect API
    * These are sent when the user changes the state of an accessory locally on the device.
    */
-  async updateCharacteristic1 (req) {
+  async updateCharacteristic (characteristics) {
 
-    for (const char in req) {
-      //this.platform.log.info(`Test - ${char} - ${req[char]}`);
-      if ((this.validCharacteristic[char]['type'] === 'boolean' && typeof req[char] === 'boolean') || (this.validCharacteristic[char]['type'] === 'range' && req[char] >= this.validCharacteristic[char]['low'] && req[char] <= this.validCharacteristic[char]['high'])) {
-        this.service.updateCharacteristic(this.platform.Characteristic[char], req[char]);
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${req[char]})`);
+    for (const characteristic in characteristics) {
+      if (this.checkCharacterisic(characteristic, characteristics[characteristic])) {
+        this.service.updateCharacteristic(this.platform.Characteristic[characteristic], characteristics[characteristic]);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${characteristic}) set to (${characteristics[characteristic]})`);
       } else {
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | ${char}) invalid value (${req[char]})`);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${characteristics[characteristic]})`);
       }
     }
   }
@@ -124,12 +79,11 @@ export class LightAccessory {
   /**
    * Handle "SET" characteristics requests from HomeKit
    */
-  setCharacteristic (characteristic, value: CharacteristicValue, callback: CharacteristicSetCallback) {
+  setCharacteristic (characteristic, characteristicValue: CharacteristicValue, callback: CharacteristicSetCallback) {
     
-    const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, `{"${characteristic}": ${value}}`);
-
+    const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, `{"${characteristic}": ${characteristicValue}}`);
     if (!device['errno']) {
-      this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name} | ${characteristic}) set to (${value})`);
+      this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name} | ${characteristic}) set to (${characteristicValue})`);
     }
     callback(null);
   }
@@ -141,7 +95,7 @@ export class LightAccessory {
   async getCharacteristic(characteristic, callback: CharacteristicGetCallback) {
 
     const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${characteristic}`, '');
-    if (!device['errno'] && ((this.validCharacteristic[characteristic]['type'] === 'boolean' && typeof device[characteristic] === 'boolean') || (this.validCharacteristic[characteristic]['type'] === 'range' && device[characteristic] >= this.validCharacteristic[characteristic]['low'] && device[characteristic] <= this.validCharacteristic[characteristic]['high']))) {
+    if (!device['errno'] && this.checkCharacterisic(characteristic, device[characteristic])) {
       this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device[characteristic]})`);
       callback(null, device[characteristic]);
     } else {
@@ -149,7 +103,19 @@ export class LightAccessory {
         this.platform.log.info(`[HomeKit] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${device[characteristic]})`);
       }
       callback(new Error ('Invalid Remote API Response'));
-      //callback(null, this.accessory.context.device.CharacteristicValue[characteristic]);
+    }
+  }
+
+  /**
+   * Check characteristic value is valid
+   */
+  checkCharacterisic(characteristic, characteristicValue) {
+    if (this.characteristicSet[characteristic]['type'] === 'boolean' && typeof characteristicValue === 'boolean') {
+      return true;
+    } else if (this.characteristicSet[characteristic]['type'] === 'range' && characteristicValue >= this.characteristicSet[characteristic]['low'] && characteristicValue <= this.characteristicSet[characteristic]['high']){
+      return true;
+    } else {
+      return false;
     }
   }
 }
