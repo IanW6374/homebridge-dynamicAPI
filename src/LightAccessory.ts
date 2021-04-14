@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback, Characteristic} from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback} from 'homebridge';
 import { dynamicAPIPlatform } from './platform';
 
 /**
