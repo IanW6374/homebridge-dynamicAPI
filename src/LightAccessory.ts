@@ -96,9 +96,7 @@ export class LightAccessory {
 
     const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${characteristic}`, '');
     if (!device['errno'] && this.checkCharacterisic(characteristic, device[characteristic])) {
-      this.platform.log.info(`Testing1:  ${JSON.stringify(this.service.getCharacteristic('Brightness'))}`);
       this.platform.log.info(`Testing2:  ${JSON.stringify(this.service.getCharacteristic(`${characteristic}`))}`);
-      this.platform.log.info(`Testing3:  ${JSON.stringify(this.service.getCharacteristic(`'${characteristic}'`))}`);
       this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device[characteristic]})`);
       callback(null, device[characteristic]);
     } else {
@@ -106,7 +104,7 @@ export class LightAccessory {
         this.platform.log.info(`[HomeKit] [Device Error]: (${this.accessory.context.device.name} | ${characteristic}) invalid value (${device[characteristic]})`);
       }
       
-      this.platform.log.info(`Testing:  ${JSON.stringify(this.service.getCharacteristic('Brightness'))}`);
+      this.platform.log.info(`Testing:  ${JSON.stringify(this.service.getCharacteristic(`${characteristic}`))}`);
       callback(new Error('Invalid Value'));
     }
   }
