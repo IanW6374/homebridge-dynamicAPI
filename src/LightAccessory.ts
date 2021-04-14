@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback, Characteristic} from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback} from 'homebridge';
 import { dynamicAPIPlatform } from './platform';
 
 /**
@@ -63,7 +63,7 @@ export class LightAccessory {
    * Handle "SET" requests from Direct Connect API
    * These are sent when the user changes the state of an accessory locally on the device.
    */
-  async updateCharacteristic (characteristics) {
+  async updateCharacteristic123 (characteristics) {
 
     for (const characteristic in characteristics) {
       if (this.checkCharacterisic(characteristic, characteristics[characteristic])) {
@@ -96,8 +96,7 @@ export class LightAccessory {
 
     const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${characteristic}`, '');
     if (!device['errno'] && this.checkCharacterisic(characteristic, device[characteristic])) {
-      const abc = this.service
-        .getCharacteristic(Characteristic.On);
+      const abc = this.platform.api.hap.Characteristic[characteristic];
       
       this.platform.log.info(`Testing1:  ${JSON.stringify(abc)}`);
 
