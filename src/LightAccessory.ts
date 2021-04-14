@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback} from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback, Characteristic} from 'homebridge';
 import { dynamicAPIPlatform } from './platform';
 
 /**
@@ -96,6 +96,11 @@ export class LightAccessory {
 
     const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${characteristic}`, '');
     if (!device['errno'] && this.checkCharacterisic(characteristic, device[characteristic])) {
+      const abc = this.service
+        .getCharacteristic(Characteristic.On);
+      
+      this.platform.log.info(`Testing1:  ${JSON.stringify(abc)}`);
+
       this.platform.log.info(`Testing2:  ${JSON.stringify(this.service.getCharacteristic(`${characteristic}`))}`);
       this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${device[characteristic]})`);
       callback(null, device[characteristic]);
