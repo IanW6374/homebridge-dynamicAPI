@@ -64,11 +64,15 @@ The configuration of the plugin can be done via the Homebrige GUI or through the
 
 ## REMOTE API
 
-* GET /API/ - Shows device summary
+* GET /API/ - Shows API state
 * GET /API/DEVICES/ - Shows all devices and their current status and characteristics
 * GET /API/DEVICES/{id:} - Shows current status and characteristics of device with id = {id:}
+* GET /API/DEVICES/{id:}/CHARACTERISTICS/ - Shows characteristics of device with id = {id:}
+* GET /API/DEVICES/{id:}/CHARACTERISTICS/{char:}/ - Shows characteristic {char:} of device with id = {id:}
 
 * PATCH /API/DEVICES/{id:} - Updates status and characteristics of device with id = {id:}
+* PATCH /API/DEVICES/{id:}/CHARACTERISTICS/ - Updates characteristics of device with id = {id:}
+* PATCH /API/DEVICES/{id:}/CHARACTERISTICS/{char:}/ - Updates characteristic {char:} of device with id = {id:}
 
 
 
