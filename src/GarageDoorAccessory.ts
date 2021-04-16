@@ -7,15 +7,23 @@ import { dynamicAPIPlatform } from './platform';
  */
 export class GarageDoorAccessory {
   private service: Service
-  private friendlyState
+  private charParams
+  private charMap
 
   constructor(
     private readonly platform: dynamicAPIPlatform,
     private readonly accessory: PlatformAccessory,
   ) {
 
+    // Valid accessory values
+    this.charParams = {
+      CurrentDoorState: {'required': true, 'get': true, 'set': false},
+      TargetDoorState: {'required': true, 'get': true, 'set': true},
+      ObstructionDetected: {'required': true, 'get': true, 'set': false},
+    };
+
     // set accessory information
-    this.friendlyState = {
+    this.charMap = {
       true: 'True',
       false: 'False',
       0:'Open',
@@ -35,19 +43,31 @@ export class GarageDoorAccessory {
     // set the service name - this is what is displayed as the default name on the Home app
     this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.name);
 
-    // create handlers for required characteristics
-    this.service.getCharacteristic(this.platform.Characteristic.TargetDoorState)
-      .on('get', this.getCharacteristic.bind(this, 'stateTarget'))
-      .on('set', this.setCharacteristic.bind(this, 'stateTarget'));
+    // register handlers for the Characteristics
+    for (const char in this.charParams) {
 
-    this.service.getCharacteristic(this.platform.Characteristic.CurrentDoorState)
-      .on('get', this.getCharacteristic.bind(this, 'stateActual'));
-
-    this.service.getCharacteristic(this.platform.Characteristic.ObstructionDetected)
-      .on('get', this.getCharacteristic.bind(this, 'obstruction'));
-   
+      if (accessory.context.device.characteristics[char] !== undefined) {
+        // SET - bind to the `setOn` method below
+        if (this.charParams[char].set === true) {
+          this.service.getCharacteristic(this.platform.Characteristic[char])
+            .on('set', this.setChar.bind(this, [char]));
+          this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Info]: ${this.accessory.context.device.name} registered for (${char}) SET characteristic`);
+        }
+        // GET - bind to the `getOn` method below  
+        if (this.charParams[char].get === true) {
+          this.service.getCharacteristic(this.platform.Characteristic[char])
+            .on('get', this.getChar.bind(this, [char]));
+          this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Info]: ${this.accessory.context.device.name} registered for (${char}) GET characteristic`);
+        }    
+      } else {
+        if (this.charParams[char].required === true) {
+          this.platform.log.error(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing required (${char}) characteristic`);
+        }
+      }
+    }
+  }
       
-    /*
+  /*
      * Polling of Garage Door Status - Not required due to dynamic updates being implemented
      *
      
@@ -64,61 +84,83 @@ export class GarageDoorAccessory {
             return res;
           });
   
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Door State) is (${this.friendlyState[actualDoorState]})`);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Door State) is (${this.charMap[actualDoorState]})`);
           
         this.service.updateCharacteristic(this.platform.Characteristic.CurrentDoorState, AccessoryInfo.stateActual);
       }, 30000);
 
      */
 
-  }
-
   
   /**
    * Handle "SET" requests from Direct Connect API
    * These are sent when the user changes the state of an accessory locally on the device.
    */
-  async updateCharacteristic (actualDoorState, targetDoorState, obstructionDetected) {
+  async updateChar (chars) {
 
-    if (obstructionDetected !== undefined){
-      this.service.updateCharacteristic(this.platform.Characteristic.ObstructionDetected, obstructionDetected);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Obstruction Detected) is (${this.friendlyState[obstructionDetected]})`);
-    }
-    if (actualDoorState !== undefined){
-      this.service.updateCharacteristic(this.platform.Characteristic.CurrentDoorState, actualDoorState);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Door State) is (${this.friendlyState[actualDoorState]})`);
-    }
-    if (targetDoorState !== undefined){
-      this.service.updateCharacteristic(this.platform.Characteristic.TargetDoorState, targetDoorState);
-      this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | Door Target State) is (${this.friendlyState[targetDoorState]})`);
+    for (const char in chars) {
+      if (this.checkChar(char, chars[char])) {
+        this.service.updateCharacteristic(this.platform.Characteristic[char], chars[char]);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${this.charMap[chars[char]]})`);
+      } else {
+        this.platform.log.warn(`[${this.platform.config.remoteApiDisplayName}] [Device Warning]: (${this.accessory.context.device.name} | ${char}) invalid value (${chars[char]})`);
+      }
     }
   }
 
+    
   /**
    * Handle "SET" characteristics requests from HomeKit
    */
-  setCharacteristic (characteristic, value: CharacteristicValue, callback: CharacteristicSetCallback) {
-    
-    const accessoryInfo = `{"id": ${this.accessory.context.device.id}, "${characteristic}": ${value}}`;
-    const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, accessoryInfo);
-
+  setChar (char, charValue: CharacteristicValue, callback: CharacteristicSetCallback) {
+    const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, `{"${char}": ${charValue}}`);
     if (!device['errno']) {
-      this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name}) [${characteristic}] set to ${this.friendlyState.value}`);
+      this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${this.charMap[`${charValue}`]})`);
     }
     callback(null);
   }
 
+  
   /**
    * Handle "GET" characteristics requests from HomeKit
    */
-  async getCharacteristic(characteristic, callback: CharacteristicGetCallback) {
-
-    const device = await this.platform.remoteAPI('GET', this.accessory.context.device.id, '');
-    if (!device['errno']) {
-      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${characteristic}) is (${this.friendlyState[device['characteristics'][characteristic]]})`);
-      callback(null, device['characteristics'][characteristic]);
+  async getChar(char, callback: CharacteristicGetCallback) {
+    const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${char}`, '');
+    if (!device['errno'] && this.checkChar(char, device[char])) {
+      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${char}) is (${this.charMap[device[char]]})`);
+      callback(null, device[char]);
     } else {
-      callback(null);
+      if (!device['errno']) {
+        this.platform.log.warn(`[HomeKit] [Device Warning]: (${this.accessory.context.device.name} | ${char}) invalid value (${device[char]})`);
+      }
+      // callback with error
+      // callback(new Error('Invalid Value'));
+
+      //callback with cached value
+      const charVal = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).value;
+      callback(null, charVal);
+    }
+  }
+
+  /**
+   * Check characteristic value is valid
+   */
+  checkChar(char, charValue) {
+    const charType = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.format;
+    const charMin = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.minValue || 0;
+    const charMax = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.maxValue || 0;
+
+    if (char in this.charParams) {
+      if (charType === 'bool' && typeof charValue === 'boolean') {
+        return true;
+      } else if ((charType === 'float' || charType === 'int' || charType === 'uint8') && charValue >= charMin && charValue <= charMax){
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
     }
   }
 }
+

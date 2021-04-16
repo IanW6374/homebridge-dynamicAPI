@@ -174,23 +174,15 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
         const deviceIndex = this.accessories[accessoryIndex].context.device.id;
 
-        if (this.accessories[accessoryIndex].context.device.type === 'Garage Door Opener') {
-          this.deviceObjects[deviceIndex].updateCharacteristic(req.body.characteristics.stateActual, req.body.characteristics.stateTarget, req.body.characteristics.obstruction);
-          res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
+        if (this.accessories[accessoryIndex].context.device.type === 'Garage Door Opener' || this.accessories[accessoryIndex].context.device.type === 'Lightbulb') {
 
-        } else if (this.accessories[accessoryIndex].context.device.type === 'Lightbulb') {
-          //this.deviceObjects[deviceIndex].updateCharacteristic(req.body.characteristics.on, req.body.characteristics.brightness, req.body.characteristics.colour, req.body.characteristics.hue, req.body.characteristics.saturation);
-          const characteristics = {};
-
-    
-          //Object.keys(user).forEach(prop => {characteristic[prop] = req.body[prop]});
-          
-          Object.assign(characteristics, req.body.characteristics);
-          //this.log.info(`Testing - ${JSON.stringify(ch)} - ${ch['on']}`);
-          this.deviceObjects[deviceIndex].updateCharacteristic(characteristics);
+          const chars = {};
+          Object.assign(chars, req.body.characteristics);
+          this.deviceObjects[deviceIndex].updateChar(chars);
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
       
         } else {
+          
           this.log.info(`[Platform Warning]: Device with type: (${req.body.name} | ${req.body.type}) not found`);
           res.status(404).send(`WARNING: Device with type: (${req.body.name} | ${req.body.type}) not found`);
         }
