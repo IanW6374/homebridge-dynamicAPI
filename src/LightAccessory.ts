@@ -40,13 +40,13 @@ export class LightAccessory {
     for (const char in this.charParams) {
 
       if (accessory.context.device.characteristics[char] !== undefined) {
-        // SET - bind to the `setOn` method below
+        // SET - bind to the `setChar` method below
         if (this.charParams[char].set === true) {
           this.service.getCharacteristic(this.platform.Characteristic[char])
             .on('set', this.setChar.bind(this, [char]));
           this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Info]: ${this.accessory.context.device.name} registered for (${char}) SET characteristic`);
         }
-        // GET - bind to the `getOn` method below  
+        // GET - bind to the `getChar` method below  
         if (this.charParams[char].get === true) {
           this.service.getCharacteristic(this.platform.Characteristic[char])
             .on('get', this.getChar.bind(this, [char]));

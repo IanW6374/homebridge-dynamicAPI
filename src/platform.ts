@@ -20,12 +20,13 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
   public readonly Service: typeof Service = this.api.hap.Service;
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
+  
   // this is used to track restored cached accessories
   public readonly accessories: PlatformAccessory[] = [];
 
   // this is used to track platform accessories for dynamic updates
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  deviceObjects: any[];
+  deviceAccessories: any[];
 
   // this is used to store the remote API JSON Web Token (JWT)
   apiJWT
@@ -38,7 +39,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
   ) {
     this.log.info(`[Platform Event]:  ${PLATFORM_NAME} platform Initialized`);
 
-    this.deviceObjects = [];
+    this.deviceAccessories = [];
     this.apiJWT = {
       'access_token': '',
       'token_type': '',
@@ -71,7 +72,6 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
     this.log.info(`[Platform Event]:  Restored Device (${accessory.displayName}) from Homebridge Cache`);
 
     // add the restored accessory to the accessories cache so we can track if it has already been registered
-
     this.accessories.push(accessory);
   }
 
@@ -103,9 +103,9 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
             // create the accessory handler for the restored accessory
             if(device.type === 'Garage Door Opener') {
-              this.deviceObjects.push(new GarageDoorAccessory(this, accessory));
+              this.deviceAccessories.push(new GarageDoorAccessory(this, accessory));
             } else if (device.type === 'Lightbulb') {
-              this.deviceObjects.push(new LightAccessory(this, accessory));
+              this.deviceAccessories.push(new LightAccessory(this, accessory));
             } else {
               this.log.warn(`[Platform Warning]:  Device Type Not Supported (${device.name} | ${device.type})`);
             }
@@ -121,9 +121,9 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
             // create the accessory handler for the restored accessory
             if(device.type === 'Garage Door Opener') {
-              this.deviceObjects.push(new GarageDoorAccessory(this, accessory));
+              this.deviceAccessories.push(new GarageDoorAccessory(this, accessory));
             } else if (device.type === 'Lightbulb') {
-              this.deviceObjects.push(new LightAccessory(this, accessory));
+              this.deviceAccessories.push(new LightAccessory(this, accessory));
             } else {
               this.log.warn(`[Platform Warning]:  Device Type Not Supported (${device.displayName} | ${device.type})`);
             }
@@ -159,7 +159,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
   updateDevice(req, res) {
 
-    if (this.deviceObjects.length === 0) {
+    if (this.deviceAccessories.length === 0) {
       this.log.warn(`[Platform Warning]: No devices synchronised from ${this.config.remoteApiDisplayName}`);
       res.status(404).send(`WARNING: No devices synchronised from ${this.config.remoteApiDisplayName}`);
     } else {
@@ -178,7 +178,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
           const chars = {};
           Object.assign(chars, req.body.characteristics);
-          this.deviceObjects[deviceIndex].updateChar(chars);
+          this.deviceAccessories[deviceIndex].updateChar(chars);
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
       
         } else {
@@ -233,7 +233,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
     WebApp.use(express.json());
     const options = {};
     let error = false;
-    const apiIP = this.config.directConnectApiIP || this.getIPAddress();
+    const directConnectApiIP = this.config.directConnectApiIP || this.getIPAddress();
 
     // Secure API - jwt
     const checkJwt = jwt({
@@ -274,33 +274,45 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
       }
 
       if (!error) {
-        https.createServer(options, WebApp).listen(this.config.directConnectApiPort, apiIP, () => {
-          this.log.info(`[Platform Info]:  Direct Connect API service started at https://${apiIP}:${this.config.directConnectApiPort}`);
+        https.createServer(options, WebApp).listen(this.config.directConnectApiPort, directConnectApiIP, () => {
+          this.log.info(`[Platform Info]:  Direct Connect API service started at https://${directConnectApiIP}:${this.config.directConnectApiPort}`);
         });
       } 
     } else {
-      WebApp.listen(this.config.directConnectApiPort, apiIP, () => {
-        this.log.info(`[Platform Info]:  Direct Connect API service started at http://${apiIP}:${this.config.directConnectApiPort}`);
+      WebApp.listen(this.config.directConnectApiPort, directConnectApiIP, () => {
+        this.log.info(`[Platform Info]:  Direct Connect API service started at http://${directConnectApiIP}:${this.config.directConnectApiPort}`);
       });
     }
 
     if (!error) {   
       // Create Direct Connect API GET Route Response
-      let getAPI = '';
+      let apiGetResponse = '';
 
-      if (this.deviceObjects.length === 0) {
-        getAPI = `[${this.config.remoteApiDisplayName}] [Platform Info]:  No devices synchronised`;
+      if (this.deviceAccessories.length === 0) {
+        apiGetResponse = `[${this.config.remoteApiDisplayName}] [Platform Info]:  No devices synchronised`;
       } else {
         this.accessories.forEach(item => {
-          getAPI += `id: ${item.context.device.id} name: ${item.context.device.name} uuid: ${item.context.device.uuid} type: ${item.context.device.type}<br>`;
+          apiGetResponse += `id: ${item.context.device.id} name: ${item.context.device.name} uuid: ${item.context.device.uuid} type: ${item.context.device.type}<br>`;
         });
       }
 
       // Create Direct Connect API GET API Route
       WebApp.get( '/', ( req, res ) => {
-        res.send(`[${this.config.remoteApiDisplayName}] [Platform Info]:  Homebridge Direct Connect API Running <br><br>${getAPI}`);
+        res.send(`[${this.config.remoteApiDisplayName}] [Platform Info]:  Homebridge Direct Connect API Running`);
+        this.log.info('[Platform Info]:  GET Direct Connect API Status');
       });
     
+      // Create Direct Connect API PATCH API Route
+      WebApp.get( '/api/', ( req, res ) => {
+        if (this.config.jwt === true){
+          res.send(`[${this.config.remoteApiDisplayName}] [Platform Info]:  Homebridge Direct Connect API Running <br><br>${apiGetResponse}`);
+          this.log.info('[Platform Info]:  GET All Accessory information and Direct Connect API Status');
+        } else {
+          res.send(`[${this.config.remoteApiDisplayName}] [Platform Info]:  Homebridge Direct Connect API Running <br><br>${apiGetResponse}`);
+          this.log.info('[Platform Info]:  GET All Accessory information and Direct Connect API Status');
+        }
+      });
+
       // Create Direct Connect API PATCH API Route
       if (this.config.jwt === true){
         WebApp.patch('/api/', checkJwt, checkScopes, async (req, res) => this.updateDevice(req, res));
@@ -391,8 +403,8 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
   
   getIPAddress() {
     const interfaces = os.networkInterfaces();
-    for (const devName in interfaces) {
-      const iface = interfaces[devName];
+    for (const deviceName in interfaces) {
+      const iface = interfaces[deviceName];
       for (let i = 0; i < iface!.length; i++) {
         const alias = iface![i];
         if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
