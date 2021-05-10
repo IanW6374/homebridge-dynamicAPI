@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-len */
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { GarageDoorAccessory } from './GarageDoorAccessory';
 import { LightAccessory } from './LightAccessory';
+import { TemperatureSensorAccessory } from './TemperatureSensorAccessory';
+import { HumiditySensorAccessory } from './HumiditySensorAccessory';
 import fetch from 'node-fetch';
 import express from 'express';
 import https from 'https';
@@ -25,8 +28,8 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
 
   // this is used to track platform accessories for dynamic updates
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deviceAccessories: any[];
+  deviceAccessoryTypes: any[];
 
   // this is used to store the remote API JSON Web Token (JWT)
   apiJWT
@@ -40,6 +43,14 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
     this.log.info(`[Platform Event]:  ${PLATFORM_NAME} platform Initialized`);
 
     this.deviceAccessories = [];
+
+    this.deviceAccessoryTypes = [
+      'Garage Door Opener',
+      'Lightbulb',
+      'Temperature Sensor',
+      'Humidity Sensor',
+    ];
+
     this.apiJWT = {
       'access_token': '',
       'token_type': '',
@@ -106,12 +117,16 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
               this.deviceAccessories.push(new GarageDoorAccessory(this, accessory));
             } else if (device.type === 'Lightbulb') {
               this.deviceAccessories.push(new LightAccessory(this, accessory));
+            } else if (device.type === 'Temperature Sensor') {
+              this.deviceAccessories.push(new TemperatureSensorAccessory(this, accessory));
+            } else if (device.type === 'Humidity Sensor') {
+              this.deviceAccessories.push(new HumiditySensorAccessory(this, accessory));
             } else {
-              this.log.warn(`[Platform Warning]:  Device Type Not Supported (${device.name} | ${device.type})`);
+              this.log.warn(`[Platform Warning]:  Device Type No Longer Supported (${device.name} | ${device.type})`);
             }
 
-            // the accessory does not yet exist, so we need to create it
-          } else {
+          // the accessory does not yet exist, so we need to create it
+          } else if (this.deviceAccessoryTypes.includes(device.type)){
 
             // create a new accessory
             const accessory = new this.api.platformAccessory(device.name, uuid);
@@ -124,8 +139,10 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
               this.deviceAccessories.push(new GarageDoorAccessory(this, accessory));
             } else if (device.type === 'Lightbulb') {
               this.deviceAccessories.push(new LightAccessory(this, accessory));
-            } else {
-              this.log.warn(`[Platform Warning]:  Device Type Not Supported (${device.displayName} | ${device.type})`);
+            } else if (device.type === 'Temperature Sensor') {
+              this.deviceAccessories.push(new TemperatureSensorAccessory(this, accessory));
+            } else if (device.type === 'Humidity Sensor') {
+              this.deviceAccessories.push(new HumiditySensorAccessory(this, accessory));
             }
           
             // Add the new accessory to the accessories cache
@@ -135,7 +152,10 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
             this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
 
             this.log.info(`[Platform Event]:  Added New Device (${device.name} | ${device.type}) from ${this.config.remoteApiDisplayName}`);
+          } else {
+            this.log.warn(`[Platform Warning]:  Device Type Not Supported (${device.name} | ${device.type})`);
           }
+          
         } 
     
         // Delete an old accessory
@@ -151,7 +171,7 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
           }
         }
       } catch {
-        this.log.error('[Platform Error]:  Invalid respone from remote API');
+        this.log.error('[Platform Error]:  Invalid response from remote API');
       }
     } 
   }
@@ -172,19 +192,17 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
 
       } else {
 
-        const deviceIndex = this.accessories[accessoryIndex].context.device.id;
-
-        if (this.accessories[accessoryIndex].context.device.type === 'Garage Door Opener' || this.accessories[accessoryIndex].context.device.type === 'Lightbulb') {
-
+        if (this.deviceAccessoryTypes.includes(this.accessories[accessoryIndex].context.device.type)) {
+          
           const chars = {};
           Object.assign(chars, req.body.characteristics);
-          this.deviceAccessories[deviceIndex].updateChar(chars);
+          this.deviceAccessories[accessoryIndex].updateChar(chars);
           res.send(JSON.stringify(this.accessories[accessoryIndex].context.device));
       
         } else {
           
-          this.log.info(`[Platform Warning]: Device with type: (${req.body.name} | ${req.body.type}) not found`);
-          res.status(404).send(`WARNING: Device with type: (${req.body.name} | ${req.body.type}) not found`);
+          this.log.info(`[Platform Warning]: Device with type: (${req.body.uuid} | ${req.body.type}) not found`);
+          res.status(404).send(`WARNING: Device with type: (${req.body.uuid} | ${req.body.type}) not found`);
         }
       }
     }
@@ -292,17 +310,16 @@ export class dynamicAPIPlatform implements DynamicPlatformPlugin {
         apiGetResponse = `[${this.config.remoteApiDisplayName}] [Platform Info]:  No devices synchronised`;
       } else {
         this.accessories.forEach(item => {
-          apiGetResponse += `id: ${item.context.device.id} name: ${item.context.device.name} uuid: ${item.context.device.uuid} type: ${item.context.device.type}<br>`;
+          apiGetResponse += `name: ${item.context.device.name} uuid: ${item.context.device.uuid} type: ${item.context.device.type}<br>`;
         });
       }
 
-      // Create Direct Connect API GET API Route
+      // Create Direct Connect API GET API Routes
       WebApp.get( '/', ( req, res ) => {
         res.send(`[${this.config.remoteApiDisplayName}] [Platform Info]:  Homebridge Direct Connect API Running`);
         this.log.info('[Platform Info]:  GET Direct Connect API Status');
       });
     
-      // Create Direct Connect API PATCH API Route
       WebApp.get( '/api/', ( req, res ) => {
         if (this.config.jwt === true){
           res.send(`[${this.config.remoteApiDisplayName}] [Platform Info]:  Homebridge Direct Connect API Running <br><br>${apiGetResponse}`);

@@ -25,6 +25,159 @@
         "default": true,
         "description": "Terminate the HTTPS connection if the Remote API presents an invalid certificate"
       },
+      "remoteApiCharPoll": {
+        "title": "Accessory Characteristic Polling",
+        "type": "array",
+        "maxItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "Lightbulb": {
+              "title": "Lightbulb Accessory",
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "title": "Enable Lightbulb Accessory",
+                  "type": "boolean",
+                  "default": false
+                },
+                "On": {
+                  "title": "On",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].Lightbulb.enabled === true;"
+                } 
+                },
+                "Brightness": {
+                  "title": "Brightness",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].Lightbulb.enabled === true;"
+                } 
+                },
+                "ColorTemperature": {
+                  "title": "ColorTemperature",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].Lightbulb.enabled === true;"
+                } 
+                },
+                "Hue": {
+                  "title": "Hue",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].Lightbulb.enabled === true;"
+                } 
+                },
+                "Saturation": {
+                  "title": "Saturation",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].Lightbulb.enabled === true;"
+                } 
+                }
+              }
+            },
+            "GarageDoorOpener": {
+              "title": "Garage Door Opener Accessory",
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "title": "Enable Garage Door Opener Accessory",
+                  "type": "boolean",
+                  "default": false
+                },
+                "CurrentDoorState": {
+                  "title": "CurrentDoorState",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].GarageDoorOpener.enabled === true;"
+                  } 
+                },
+                "ObstructionDetected": {
+                  "title": "ObstructionDetected",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].GarageDoorOpener.enabled === true;"
+                  } 
+                }
+              }
+            },
+            "TemperatureSensor": {
+              "title": "Temperature Sensor Accessory",
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "title": "Enable Temperature Sensor Accessory",
+                  "type": "boolean",
+                  "default": false
+                },
+                "CurrentTemperature": {
+                  "title": "CurrentTemperature",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].TemperatureSensor.enabled === true;"
+                  } 
+                },
+                "StatusActive": {
+                  "title": "StatusActive",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].TemperatureSensor.enabled === true;"
+                  } 
+                }
+              }
+            },
+            "HumiditySensor": {
+              "title": "Humidity Sensor Accessory",
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "title": "Enable Humidity Sensor Accessory",
+                  "type": "boolean",
+                  "default": false
+                },
+                "CurrentRelativeHumidity": {
+                  "title": "CurrentRelativeHumidity",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].HumiditySensor.enabled === true;"
+                  } 
+                },
+                "StatusActive": {
+                  "title": "StatusActive",
+                  "type": "boolean",
+                  "default": true,
+                  "condition": {
+                  "functionBody": "return model.remoteApiCharPoll[arrayIndices].HumiditySensor.enabled === true;"
+                  } 
+                }
+              }
+            }
+          }
+        }
+      },
+      "remoteApiPollInt": {
+        "title": "Polling Interval",
+        "type": "integer",
+        "default": 10,
+        "minimum": 5,
+        "maximum": 60,
+        "description": "Time between Poll Events (in Seconds)",
+        "condition": {
+          "functionBody": "return model.remoteApiCharPoll[0].Lightbulb.enabled === true || model.remoteApiCharPoll[0].GarageDoorOpener.enabled === true || model.remoteApiCharPoll[0].TemperatureSensor.enabled === true || model.remoteApiCharPoll[0].HumiditySensor.enabled === true;"
+        } 
+      },
       "directConnectApiIP": {
         "title": "Direct Connect API IPv4 Address",
         "type": "string",
@@ -36,7 +189,8 @@
         "title": "Direct Connect API Port",
         "type": "integer",
         "required": true,
-        "default": "8001",
+        "default": 8001,
+        "maximum": 65535,
         "description": "The Port of the Direct Connect API"
       },
       "directConnectApiHttps": {
@@ -114,45 +268,72 @@
     }
   },
   "layout":[
-  {
-    "key": "RemoteAPI",
-    "type": "section",
-    "title": "Remote API",
-    "expandable": false,
-    "expanded": true,
-    "items": [
-      "remoteApiDisplayName",
-      "remoteApiURL",
-      "remoteApiRejectInvalidCert"
+    {
+      "key": "remoteApi",
+      "type": "section",
+      "title": "Remote API",
+      "expandable": false,
+      "expanded": true,
+      "items": [
+        "remoteApiDisplayName",
+        "remoteApiURL",
+        "remoteApiRejectInvalidCert",
+        {
+          "key": "remoteApiCharPoll",
+          "type": "section",
+          "title": "Configure Remote API Accessory Type Characteristic Polling",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            "remoteApiCharPoll[].Lightbulb.enabled",
+            "remoteApiCharPoll[].Lightbulb.On",
+            "remoteApiCharPoll[].Lightbulb.Brightness",
+            "remoteApiCharPoll[].Lightbulb.ColorTemperature",
+            "remoteApiCharPoll[].Lightbulb.Hue",
+            "remoteApiCharPoll[].Lightbulb.Saturation",
+            "remoteApiCharPoll[].GarageDoorOpener.enabled",
+            "remoteApiCharPoll[].GarageDoorOpener.CurrentDoorState",
+            "remoteApiCharPoll[].GarageDoorOpener.ObstructionDetected",
+            "remoteApiCharPoll[].TemperatureSensor.enabled",
+            "remoteApiCharPoll[].TemperatureSensor.CurrentTemperature",
+            "remoteApiCharPoll[].TemperatureSensor.StatusActive",
+            "remoteApiCharPoll[].HumiditySensor.enabled",
+            "remoteApiCharPoll[].HumiditySensor.CurrentRelativeHumidity",
+            "remoteApiCharPoll[].HumiditySensor.StatusActive"
+          ]
+        },
+        "remoteApiPollingInterval"
+      ] 
+    },
+    {
+      "key": "directConnectApi",
+      "type": "section",
+      "title": "Direct Connect API",
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        "directConnectApiIP",
+        "directConnectApiPort",
+        "directConnectApiHttps",
+        "directConnectApiHttpsCertPath",
+        "directConnectApiHttpsKeyPath"
       ]
-  },
-  {
-    "key": "DirectConnectAPI",
-    "type": "section",
-    "title": "Direct Connect API",
-    "expandable": true,
-    "expanded": false,
-    "items": [
-      "directConnectApiIP",
-      "directConnectApiPort",
-      "directConnectApiHttps",
-      "directConnectApiHttpsCertPath",
-      "directConnectApiHttpsKeyPath"
-      ]
-  },
-  {  
-    "key": "jwt",
-    "type": "section",
-    "title": "JSON Web Token (JWT) Secure API",
-    "expandable": true,
-    "expanded": false,
-    "items": [
-      "jwt",
-      "jwtAudience",
-      "jwtIssuer",
-      "jwtClientID",
-      "jwtClientSecret"
+    },
+    {  
+      "key": "jwt",
+      "type": "section",
+      "title": "JSON Web Token (JWT) Secure API",
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        "jwt",
+        "jwtAudience",
+        "jwtIssuer",
+        "jwtClientID",
+        "jwtClientSecret"
       ]
     }
-   ]
+  ]
 }
+
+

@@ -14,13 +14,13 @@ export class LightAccessory {
     private readonly accessory: PlatformAccessory,
   ) {
 
-    // Valid accessory values
+    // Supported accessory characteristics
     this.charParams = {
-      On: {'required': true, 'get': true, 'set': true},
-      Brightness: {'required': false, 'get': true, 'set': true},
-      ColorTemperature: {'required': false, 'get': true, 'set': true},
-      Hue: {'required': false, 'get': true, 'set': true},
-      Saturation: {'required': false, 'get': true, 'set': true},
+      On: {required: true, get: true, set: true},
+      Brightness: {required: false, get: true, set: true},
+      ColorTemperature: {required: false, get: true, set: true},
+      Hue: {required: false, get: true, set: true},
+      Saturation: {required: false, get: true, set: true},
     };
 
     // set accessory information
@@ -51,13 +51,27 @@ export class LightAccessory {
           this.service.getCharacteristic(this.platform.Characteristic[char])
             .on('get', this.getChar.bind(this, [char]));
           this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Info]: ${this.accessory.context.device.name} registered for (${char}) GET characteristic`);
-        }    
+        }
+        // Poll Device Characteristics Periodically and Update HomeKit
+        if (this.platform.config.remoteApiCharPoll[0].Lightbulb.enabled && this.platform.config.remoteApiCharPoll[0].Lightbulb[char]) {
+          setInterval (async () => {
+            const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.uuid}/characteristics/${char}`, '');
+            if (!device['errno'] && this.checkChar(char, device[char])) {
+              this.service.updateCharacteristic(this.platform.Characteristic[char], device[char]);
+              this.platform.log.info(`[Homebridge] [Device Info]: (${this.accessory.context.device.name} | ${char}) is (${device[char]})`);
+            } else {
+              if (!device['errno']) {
+                this.platform.log.warn(`[Homebridge] [Device Warning]: (${this.accessory.context.device.name} | ${char}) invalid value (${device[char]})`);
+              }
+            }
+          }, this.platform.config.remoteApiPollInt*1000);
+        }
       } else {
         if (this.charParams[char].required === true) {
           this.platform.log.error(`[${this.platform.config.remoteApiDisplayName}] [Device Error]: ${this.accessory.context.device.name} missing required (${char}) characteristic`);
         }
       }
-    }
+    } 
   }
   
 
@@ -83,7 +97,7 @@ export class LightAccessory {
    */
   setChar (char, charValue: CharacteristicValue, callback: CharacteristicSetCallback) {
     
-    const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.id, `{"${char}": ${charValue}}`);
+    const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.uuid, `{"${char}": ${charValue}}`);
     if (!device['errno']) {
       this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${charValue})`);
     }
@@ -96,7 +110,7 @@ export class LightAccessory {
    */
   async getChar(char, callback: CharacteristicGetCallback) {
 
-    const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.id}/characteristics/${char}`, '');
+    const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.uuid}/characteristics/${char}`, '');
     if (!device['errno'] && this.checkChar(char, device[char])) {
       this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${char}) is (${device[char]})`);
       callback(null, device[char]);
@@ -117,6 +131,7 @@ export class LightAccessory {
    * Check characteristic value is valid
    */
   checkChar(char, charValue) {
+
     const charType = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.format;
     const charMin = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.minValue || 0;
     const charMax = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.maxValue || 0;

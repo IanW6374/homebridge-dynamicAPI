@@ -1,14 +1,13 @@
 /* eslint-disable max-len */
-import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback} from 'homebridge';
 import { dynamicAPIPlatform } from './platform';
 
 /**
- * Garage Door Accessory
+ * Temperature Sensor Accessory
  */
-export class GarageDoorAccessory {
+export class HumiditySensorAccessory {
   private service: Service
   private charParams
-  private charMap
 
   constructor(
     private readonly platform: dynamicAPIPlatform,
@@ -17,30 +16,21 @@ export class GarageDoorAccessory {
 
     // Supported accessory characteristics
     this.charParams = {
-      CurrentDoorState: {required: true, get: true, set: false},
-      TargetDoorState: {required: true, get: true, set: true},
-      ObstructionDetected: {required: true, get: true, set: false},
+      CurrentRelativeHumidity: {required: true, get: true, set: false},
+      StatusActive: {required: false, get: true, set: false},
     };
 
     // set accessory information
-    this.charMap = {
-      true: 'True',
-      false: 'False',
-      0:'Open',
-      1:'Closed',
-      2:'Opening',
-      3:'Closing',
-      4:'Stopped',
-    };
-
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
       .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Home')
-      .setCharacteristic(this.platform.Characteristic.Model, 'Garage Door')
+      .setCharacteristic(this.platform.Characteristic.Model, 'Humidity Sensor')
       .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.uuid);
 
-    this.service = this.accessory.getService(this.platform.Service.GarageDoorOpener) || this.accessory.addService(this.platform.Service.GarageDoorOpener);
 
-    // set the service name - this is what is displayed as the default name on the Home app
+    // get the HumiditySensor service if it exists, otherwise create a new HumiditySensor service
+    this.service = this.accessory.getService(this.platform.Service.HumiditySensor) || this.accessory.addService(this.platform.Service.HumiditySensor);
+    
+    // set the service name, this is what is displayed as the default name on the Home app
     this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.name);
 
     // register handlers for the Characteristics
@@ -60,7 +50,7 @@ export class GarageDoorAccessory {
           this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Info]: ${this.accessory.context.device.name} registered for (${char}) GET characteristic`);
         }
         // Poll Device Characteristics Periodically and Update HomeKit
-        if (this.platform.config.remoteApiCharPoll[0].GarageDoorOpener.enabled && this.platform.config.remoteApiCharPoll[0].GarageDoorOpener[char]) {
+        if (this.platform.config.remoteApiCharPoll[0].HumiditySensor.enabled && this.platform.config.remoteApiCharPoll[0].HumiditySensor[char]) {
           setInterval (async () => {
             const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.uuid}/characteristics/${char}`, '');
             if (!device['errno'] && this.checkChar(char, device[char])) {
@@ -80,8 +70,8 @@ export class GarageDoorAccessory {
       }
     } 
   }
-      
   
+
   /**
    * Handle "SET" requests from Direct Connect API
    * These are sent when the user changes the state of an accessory locally on the device.
@@ -91,7 +81,7 @@ export class GarageDoorAccessory {
     for (const char in chars) {
       if (this.checkChar(char, chars[char])) {
         this.service.updateCharacteristic(this.platform.Characteristic[char], chars[char]);
-        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${this.charMap[chars[char]]})`);
+        this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${chars[char]})`);
       } else {
         this.platform.log.warn(`[${this.platform.config.remoteApiDisplayName}] [Device Warning]: (${this.accessory.context.device.name} | ${char}) invalid value (${chars[char]})`);
       }
@@ -103,9 +93,10 @@ export class GarageDoorAccessory {
    * Handle "SET" characteristics requests from HomeKit
    */
   setChar (char, charValue: CharacteristicValue, callback: CharacteristicSetCallback) {
+    
     const device = this.platform.remoteAPI('PATCH', this.accessory.context.device.uuid, `{"${char}": ${charValue}}`);
     if (!device['errno']) {
-      this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${this.charMap[`${charValue}`]})`);
+      this.platform.log.info(`[HomeKit] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${charValue})`);
     }
     callback(null);
   }
@@ -115,9 +106,10 @@ export class GarageDoorAccessory {
    * Handle "GET" characteristics requests from HomeKit
    */
   async getChar(char, callback: CharacteristicGetCallback) {
+
     const device = await this.platform.remoteAPI('GET', `${this.accessory.context.device.uuid}/characteristics/${char}`, '');
     if (!device['errno'] && this.checkChar(char, device[char])) {
-      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${char}) is (${this.charMap[device[char]]})`);
+      this.platform.log.info(`[HomeKit] [Device Info]: (${this.accessory.context.device.name} | ${char}) is (${device[char]})`);
       callback(null, device[char]);
     } else {
       if (!device['errno']) {
@@ -140,11 +132,11 @@ export class GarageDoorAccessory {
     const charType = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.format;
     const charMin = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.minValue || 0;
     const charMax = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.maxValue || 0;
-
+    
     if (char in this.charParams) {
       if (charType === 'bool' && typeof charValue === 'boolean') {
         return true;
-      } else if ((charType === 'float' || charType === 'int' || charType === 'uint8') && charValue >= charMin && charValue <= charMax){
+      } else if ((charType === 'float' || charType === 'int') && charValue >= charMin && charValue <= charMax){
         return true;
       } else {
         return false;
@@ -154,4 +146,3 @@ export class GarageDoorAccessory {
     }
   }
 }
-

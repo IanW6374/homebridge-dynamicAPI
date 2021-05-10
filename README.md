@@ -12,13 +12,14 @@
 
 # homebridge-dynamicAPI
 
-This is a Homebridge dynamic platform plugin which exposes remote light and garage door accessories through a remote API.  
+This is a Homebridge dynamic platform plugin which exposes remote light, temperature, humidity and garage door accessories through a remote API.  
 
 ### Features:
 
 * Accessories are dynamically created through remote API when Homebridge is started
 * Control remote accessories through API
 * Support of dynamic updates from accessories to support garage door state monitoring and local garage door / light activation.
+* Support of characteristic polling to improve Home application performance.
 
 
 ### Optional Features:
@@ -42,6 +43,34 @@ The configuration of the plugin can be done via the Homebrige GUI or through the
             "remoteApiDisplayName": "<display name>",
             "remoteApiURL": "https://host:8001/API-Endpoint/",
             "remoteApiRejectInvalidCert": false,
+            "remoteApiCharPoll": [
+                {
+                    "Lightbulb": {
+                        "enabled": false,
+                        "On": true,
+                        "Brightness": true,
+                        "ColorTemperature": true,
+                        "Hue": true,
+                        "Saturation": true
+                    },
+                    "GarageDoorOpener": {
+                        "enabled": false,
+                        "CurrentDoorState": true,
+                        "ObstructionDetected": true
+                    },
+                    "TemperatureSensor": {
+                        "enabled": false,
+                        "CurrentTemperature": true,
+                        "StatusActive": true
+                    },
+                    "HumiditySensor": {
+                        "enabled": false,
+                        "CurrentRelativeHumidity": true,
+                        "StatusActive": true
+                    }
+                }
+            ],
+            "remoteApiPollInt": 10,
             "directConnectApiPort": 8001,
             "directConnectApiHttps": false,
             "directConnectApiHttpsCertPath": "/<certificate path>/<certificate>",
@@ -55,6 +84,7 @@ The configuration of the plugin can be done via the Homebrige GUI or through the
         }
 
 ```
+
 ## DIRECT CONNECT API
 
 * GET / - Shows all devices registered to Homebridge from this platform
@@ -66,13 +96,17 @@ The configuration of the plugin can be done via the Homebrige GUI or through the
 
 * GET /API/ - Shows API state
 * GET /API/DEVICES/ - Shows all devices and their current status and characteristics
-* GET /API/DEVICES/{id:} - Shows current status and characteristics of device with id = {id:}
-* GET /API/DEVICES/{id:}/CHARACTERISTICS/ - Shows characteristics of device with id = {id:}
-* GET /API/DEVICES/{id:}/CHARACTERISTICS/{char:}/ - Shows characteristic {char:} of device with id = {id:}
+* GET /API/DEVICES/{uuid:} - Shows current status and characteristics of device with id = {uuid:}
+* GET /API/DEVICES/{uuid:}/CHARACTERISTICS/ - Shows characteristics of device with id = {uuid:}
+* GET /API/DEVICES/{uuid:}/CHARACTERISTICS/{char:}/ - Shows characteristic {char:} of device with id = {uuid:}
 
-* PATCH /API/DEVICES/{id:} - Updates status and characteristics of device with id = {id:}
-* PATCH /API/DEVICES/{id:}/CHARACTERISTICS/ - Updates characteristics of device with id = {id:}
-* PATCH /API/DEVICES/{id:}/CHARACTERISTICS/{char:}/ - Updates characteristic {char:} of device with id = {id:}
+* PATCH /API/DEVICES/{uuid:} - Updates status and characteristics of device with id = {uuid:}
+* PATCH /API/DEVICES/{uuid:}/CHARACTERISTICS/ - Updates characteristics of device with id = {uuid:}
+* PATCH /API/DEVICES/{uuid:}/CHARACTERISTICS/{char:}/ - Update characteristic {char:} of device with id = {uuid:}
 
+
+## ASSOCIATED REMOTE API IMPLEMENTATION
+
+Please see project https://github.com/IanW6374/Raspberry-Garage for an implementation of the Remote API on the Raspberry Pi platform.
 
 
