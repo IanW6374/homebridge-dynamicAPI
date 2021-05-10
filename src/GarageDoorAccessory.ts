@@ -88,10 +88,7 @@ export class GarageDoorAccessory {
    */
   async updateChar (chars) {
 
-    this.platform.log.info(`Test1: ${JSON.stringify(chars)}`);
-
     for (const char in chars) {
-      this.platform.log.info(`Test2: ${char}`);
       if (this.checkChar(char, chars[char])) {
         this.service.updateCharacteristic(this.platform.Characteristic[char], chars[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${this.charMap[chars[char]]})`);
