@@ -83,7 +83,7 @@ export class TemperatureSensorAccessory {
         this.service.updateCharacteristic(this.platform.Characteristic[char], chars[char]);
         this.platform.log.info(`[${this.platform.config.remoteApiDisplayName}] [Device Event]: (${this.accessory.context.device.name} | ${char}) set to (${chars[char]})`);
       } else {
-        this.platform.log.warn(`[${this.platform.config.remoteApiDisplayName}] [Device Warning]: (${this.accessory.context.device.name} | ${char}) invalid value (${chars[char]})`);
+        this.platform.log.warn(`[${this.platform.config.remoteApiDisplayName}] [Device Warning]: (${this.accessory.context.device.name} | ${char} | ${chars[char]}) invalid characteristic or value`);
       }
     }
   }
@@ -129,11 +129,12 @@ export class TemperatureSensorAccessory {
    */
   checkChar(char, charValue) {
     
-    const charType = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.format;
-    const charMin = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.minValue || 0;
-    const charMax = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.maxValue || 0;
-    
     if (char in this.charParams) {
+
+      const charType = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.format;
+      const charMin = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.minValue || 0;
+      const charMax = this.service.getCharacteristic(this.platform.api.hap.Characteristic[char]).props.maxValue || 0;
+
       if (charType === 'bool' && typeof charValue === 'boolean') {
         return true;
       } else if ((charType === 'float' || charType === 'int') && charValue >= charMin && charValue <= charMax){
